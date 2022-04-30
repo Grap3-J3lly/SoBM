@@ -30,6 +30,10 @@ public class PlayerController : MonoBehaviour
 
     // Interaction Related
     private bool interacting;
+    
+    public bool zoneEntered = false;
+    public GameObject objectInZone;
+
 
     //------------------------------------------------------
     //             STANDARD FUNCTIONS
@@ -46,7 +50,7 @@ public class PlayerController : MonoBehaviour
         inputControl.CharacterControls.Move.Enable();
         inputControl.CharacterControls.Interact.Enable();
 
-        UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown += OnInteract;
+        //UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown += OnInteract;
     }
 
     private void Start() {
@@ -67,7 +71,7 @@ public class PlayerController : MonoBehaviour
         inputControl.CharacterControls.Move.Disable();
         inputControl.CharacterControls.Interact.Disable();
 
-        UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown -= OnInteract;
+        //UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown -= OnInteract;
         EnhancedTouchSupport.Disable();
     }
 
@@ -90,7 +94,7 @@ public class PlayerController : MonoBehaviour
     private void HandleInteractionSetup() {
         // inputControl.CharacterControls.Interact.started += OnInteract;
         // inputControl.CharacterControls.Interact.canceled += OnInteract;
-        // inputControl.CharacterControls.Interact.performed += OnInteract;
+        inputControl.CharacterControls.Interact.performed += OnInteract;
 
         EnhancedTouchSupport.Enable();
     }
@@ -140,20 +144,41 @@ public class PlayerController : MonoBehaviour
     // https://www.youtube.com/watch?v=guOhuhh4CTQ
     // https://www.youtube.com/watch?v=sYtWOsKvqcg
 
-    private void OnInteract(Finger finger) {
-        Vector2 newPos = camera.ScreenToWorldPoint(finger.screenPosition);
+    // private void OnInteract(Finger finger) {
+    //     Vector2 newPos = camera.ScreenToWorldPoint(finger.screenPosition);
 
-        Vector3 test = new Vector3(newPos.x, newPos.y, 5f);
+    //     Vector3 test = new Vector3(newPos.x, newPos.y, 5f);
 
-        //Debug.Log("World Location Info: " + newPos);
+    //     //Debug.Log("World Location Info: " + newPos);
 
-        Debug.Log("Finger Position Info: " + finger.screenPosition);
+    //     Debug.Log("Finger Position Info: " + finger.screenPosition);
+    // }
+
+    private void OnInteract(InputAction.CallbackContext context) {
+        Debug.Log("Interaction Occurred");
+
+        if(zoneEntered) {
+            Debug.Log("Interaction ocurring with object in zone");
+        }
+
     }
 
     private void HandleInteraction() {
         if(interacting) {
             Debug.Log("Interaction Triggered");
         }
+    }
+
+    private void OnTriggerEnter(Collider info) {
+        Debug.Log("Triggered");
+        zoneEntered = true;
+        objectInZone = info.gameObject;
+    }
+
+    private void OnTriggerExit(Collider info) {
+        Debug.Log("Not Triggered");
+        zoneEntered = false;
+        objectInZone = null;
     }
 
 }
