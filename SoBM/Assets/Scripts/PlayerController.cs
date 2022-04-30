@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     // General Related
     private GameManager gameManager;
     [SerializeField] private Camera camera;
+    [SerializeField] private InventoryManager inventoryManager;
 
     // Player Related
 
@@ -31,9 +32,19 @@ public class PlayerController : MonoBehaviour
     // Interaction Related
     private bool interacting;
     
-    public bool zoneEntered = false;
-    public GameObject objectInZone;
+    private bool zoneEntered = false;
+    private GameObject objectInZone;
 
+
+    //------------------------------------------------------
+    //             GETTERS/SETTERS
+    //------------------------------------------------------
+
+    public bool GetZoneEntered() {return zoneEntered;} 
+    public void SetZoneEntered(bool newValue) {zoneEntered = newValue;}
+
+    public GameObject GetObjectInZone() {return objectInZone;}
+    public void SetObjectInZone(GameObject newObject) {objectInZone = newObject;}
 
     //------------------------------------------------------
     //             STANDARD FUNCTIONS
@@ -61,7 +72,7 @@ public class PlayerController : MonoBehaviour
         HandleRotation();
         HandleMovement();
 
-        HandleInteraction();
+        //HandleInteraction();
 
 
     }
@@ -155,30 +166,31 @@ public class PlayerController : MonoBehaviour
     // }
 
     private void OnInteract(InputAction.CallbackContext context) {
-        Debug.Log("Interaction Occurred");
+        //Debug.Log("Interaction Occurred");
 
         if(zoneEntered) {
             Debug.Log("Interaction ocurring with object in zone");
+            if(objectInZone != null && objectInZone.tag == "Interactable") {
+                //Debug.Log("Checking Object: " + objectInZone.gameObject.name);
+                objectInZone.GetComponent<InteractableController>().HandleInteraction(inventoryManager);
+                //objectInZone.SetActive(false);
+            }
         }
 
     }
 
-    private void HandleInteraction() {
-        if(interacting) {
-            Debug.Log("Interaction Triggered");
-        }
-    }
+    // private void HandleInteraction() {
+    //     if(interacting) {
+    //         Debug.Log("Interaction Triggered");
+    //     }
+    // }
 
     private void OnTriggerEnter(Collider info) {
-        Debug.Log("Triggered");
-        zoneEntered = true;
-        objectInZone = info.gameObject;
+        
     }
 
     private void OnTriggerExit(Collider info) {
-        Debug.Log("Not Triggered");
-        zoneEntered = false;
-        objectInZone = null;
+        
     }
 
 }
