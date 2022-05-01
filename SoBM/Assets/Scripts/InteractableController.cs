@@ -9,10 +9,18 @@ public class InteractableController : MonoBehaviour
     //------------------------------------------------------
     
     private GameManager gameManager;
-    private bool inInteractZone = false;
 
     [SerializeField] private bool activeState = false;
+    private bool triggered = false;
+
+    // Switch Only
     [SerializeField] private GameObject swivel;
+
+    // Button Only
+    [SerializeField] private GameObject buttonTrigger;
+    [SerializeField] private float triggerDepressedHeight = .125f;
+    [SerializeField] private float triggerPressedHeight = 0;
+
 
     public enum InteractableType {
         Switch,
@@ -23,13 +31,6 @@ public class InteractableController : MonoBehaviour
     [SerializeField] private InteractableType interactType;
 
     //------------------------------------------------------
-    //                  GETTERS/SETTERS
-    //------------------------------------------------------
-
-    public bool GetInInteractZone() {return inInteractZone;}
-    public void SetInInteractZone(bool newValue) {inInteractZone = newValue;}
-
-    //------------------------------------------------------
     //                  STANDARD FUNCTIONS
     //------------------------------------------------------
 
@@ -38,12 +39,18 @@ public class InteractableController : MonoBehaviour
         if(interactType == InteractableType.Switch) {
             RotateSwivel(activeState);
         }
+        if(interactType == InteractableType.Button) {
+            ShiftButton(activeState);
+        }
         
     }
 
     private void Update() {
         if(interactType == InteractableType.Switch) {
             RotateSwivel(activeState);
+        }
+        if(interactType == InteractableType.Button) {
+            ShiftButton(activeState);
         }
     }
 
@@ -52,24 +59,38 @@ public class InteractableController : MonoBehaviour
     //------------------------------------------------------
 
     private void OnTriggerEnter(Collider info) {
-        Debug.Log("Triggered in Block Controller");
-        Debug.Log(info.gameObject.tag);
+        if(!triggered){
+            triggered = true;
+            Debug.Log("Triggered by: " + info.gameObject.tag);
 
-        if(info.gameObject.tag == "Player") {
+
+            if(info.gameObject.tag == "Player") {
             PlayerController tempController = info.gameObject.GetComponentInParent<PlayerController>();
             tempController.SetZoneEntered(true);
             tempController.SetObjectInZone(gameObject);
-        }
 
+            if(this.interactType == InteractableType.Button) {
+                gameObject.GetComponent<BoxCollider>().enabled = false;
+                HandleButtonInteraction();
+            }
+            StartCoroutine(Reset());
+        }
+        }
     }
 
     private void OnTriggerExit(Collider info) {
         Debug.Log("Leaving Interact Zone");
 
         if(info.gameObject.tag == "Player") {
+
             PlayerController tempController = info.gameObject.GetComponentInParent<PlayerController>();
             tempController.SetZoneEntered(false);
             tempController.SetObjectInZone(null);
+            
+            if(this.interactType == InteractableType.Button) {
+                gameObject.GetComponent<BoxCollider>().enabled = true;
+            }
+
         }
 
     }
@@ -81,11 +102,11 @@ public class InteractableController : MonoBehaviour
     public void HandleInteraction(InventoryManager inventoryManager) {
         
         if(this.interactType == InteractableType.Block) {
-            HandleButtonInteraction(inventoryManager);
+            HandleButtonInteraction();
         }
 
         if(this.interactType == InteractableType.Switch) {
-            HandleSwitchInteraction(inventoryManager);
+            HandleSwitchInteraction();
         }
 
         if(this.interactType == InteractableType.Block) {
@@ -93,16 +114,15 @@ public class InteractableController : MonoBehaviour
         }
     }
 
-    private void HandleSwitchInteraction(InventoryManager inventoryManager) {
+    private void HandleSwitchInteraction() {
         ToggleItem(activeState);
     }
 
-    private void HandleButtonInteraction(InventoryManager inventoryManager) {
-
+    private void HandleButtonInteraction() {
+        ToggleItem(activeState);
     }
 
     private void HandleBlockInteraction(InventoryManager inventoryManager) {
-        Debug.Log("Trying to handle a block");
         inventoryManager.inventory.Add(gameObject);
         inventoryManager.CreateButton(gameObject);
         transform.SetParent(inventoryManager.gameObject.transform);
@@ -132,6 +152,23 @@ public class InteractableController : MonoBehaviour
         else {
             swivel.transform.rotation = Quaternion.Euler(parentRotation.x, parentRotation.y, -45);
         }
+    }
+
+    private void ShiftButton(bool up) {
+        Vector3 currentPosition = buttonTrigger.transform.position;
+        if(up) {
+            Vector3 pressedPosition = new Vector3(currentPosition.x, triggerPressedHeight, currentPosition.z);
+            buttonTrigger.transform.position = pressedPosition;
+        }
+        else {
+            Vector3 depressedPosition = new Vector3(currentPosition.x, triggerDepressedHeight, currentPosition.z);
+            buttonTrigger.transform.position = depressedPosition;
+        }
+    }
+
+    IEnumerator Reset() {
+        yield return new WaitForSeconds(2.5f);
+        triggered = false;
     }
 
 }

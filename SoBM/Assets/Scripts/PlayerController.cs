@@ -124,6 +124,9 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMovement() {
         Vector3 currentMovement = horizontalForce * Time.deltaTime * moveSpeed;
+        if(transform.position.y > 1) {
+            currentMovement.y = -1;
+        }
         charController.Move(currentMovement);
     }
 
@@ -166,7 +169,6 @@ public class PlayerController : MonoBehaviour
     // }
 
     private void OnInteract(InputAction.CallbackContext context) {
-        //Debug.Log("Interaction Occurred");
 
         if(zoneEntered) {
             Debug.Log("Interaction ocurring with object in zone");
