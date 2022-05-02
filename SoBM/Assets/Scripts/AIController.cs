@@ -8,17 +8,208 @@ public class AIController : MonoBehaviour
     //                  VARIABLES
     //------------------------------------------------------
     
-    public enum AIType {
+    // General
+    private GameManager gameManager;
+    private LevelManager levelManager;
+    private GameObject playerObject;
+
+    private List<GameObject> levelRequirements = new List<GameObject>();
+
+    private GameObject currentTarget;
+    private bool nearTarget = false;
+
+    [SerializeField] private float delay = 1f;
+
+    // Movement Focus
+
+    [SerializeField] private float moveSpeed = 2.5f;
+    [SerializeField] private float rotationSpeed = 100f;
+
+    private bool isWandering = false;
+    private bool isRotatingLeft = false;
+    private bool isRotatingRight = false;
+    private bool isWalking = false;
+
+    [SerializeField] private Vector2 rotationTimeRange = new Vector2(1, 3);
+    [SerializeField] private Vector2 rotationWaitRange = new Vector2(1, 4);
+
+    [SerializeField] private Vector2 walkingTimeRange = new Vector2(1, 3);
+    [SerializeField] private Vector2 walkingWaitRange = new Vector2(1, 4); 
+
+    // React Focus
+
+    // Interact Focus
+    
+    // Pursue Focus
+
+    public enum Behaviors {
         React,
         Interact,
         Pursue
     }
 
-    [SerializeField] private AIType behavior;
+    [SerializeField] private Behaviors behavior;
+
+    //------------------------------------------------------
+    //                  COROUTINES
+    //------------------------------------------------------
+
+    public IEnumerator Wander() {
+        int rotationTime = gameManager.GenerateFromCurrentState((int)rotationTimeRange.x, (int)rotationTimeRange.y);
+        int rotationWaitPeriod = gameManager.GenerateFromCurrentState((int)rotationWaitRange.x, (int)rotationWaitRange.y);
+        
+        // RotationDirection only has two states, doesn't need a specific range
+        int rotationDirection = gameManager.GenerateFromCurrentState(0, 3);
+        
+        int walkingTime = gameManager.GenerateFromCurrentState((int)walkingTimeRange.x, (int)walkingTimeRange.y);
+        int walkingWaitPeriod = gameManager.GenerateFromCurrentState((int)walkingWaitRange.x, (int)walkingWaitRange.y);
+
+        isWandering = true;
+
+        yield return new WaitForSeconds(walkingWaitPeriod);
+        isWalking = true;
+        yield return new WaitForSeconds(walkingTime);
+        isWalking = false;
+        yield return new WaitForSeconds(rotationWaitPeriod);
+        if(rotationDirection == 1) {
+            isRotatingRight = true;
+            yield return new WaitForSeconds(rotationTime);
+            isRotatingRight = false;
+        }
+        if(rotationDirection == 2) {
+            isRotatingLeft = true;
+            yield return new WaitForSeconds(rotationTime);
+            isRotatingLeft = false;
+        }
+
+        isWandering = false;
+        
+    }
+
+    public IEnumerator TargetRequirement() {
+        yield return new WaitForSeconds(delay);
+
+        DetermineTarget();
+        Debug.Log("Current Target: " + currentTarget);
+    }
+
+    //------------------------------------------------------
+    //                  STANDARD FUNCTIONS
+    //------------------------------------------------------
+
+    private void Start() {
+        HandleInitialSetup();
+    }
+
+    private void Update() {
+        if(currentTarget == null) {
+            HandleWanderMovement();
+        }
+        else {
+            ApproachTarget();
+        }
+        
+    }
+
+    //------------------------------------------------------
+    //                  COLLISION FUNCTIONS
+    //------------------------------------------------------
+
+    private void OnCollisionEnter(Collision info) {
+        if(info.gameObject.tag == "Wall") {
+            Debug.Log("Colliding with wall");
+            TurnAround();
+            gameManager.Reset();            
+        }
+
+        if(currentTarget != null && info.gameObject == currentTarget) {
+            nearTarget = true;
+            isWalking = false;
+        }
+    }
+
+    //------------------------------------------------------
+    //                  SETUP FUNCTIONS
+    //------------------------------------------------------
+
+    private void HandleInitialSetup() {
+        gameManager = GameManager.Instance;
+        levelManager = gameManager.GetLevels()[gameManager.GetCurrentLevelNum()];
+        levelRequirements = levelManager.GetLevelRequirementList();
+        playerObject = gameManager.GetPlayerObject();
+        HandleBehaviorSetup(behavior);
+    }
+
+    private void HandleBehaviorSetup(Behaviors currentBehavior) {
+        if(currentBehavior == Behaviors.React) {
+            HandleReactionSetup();
+        }
+    }
+
+    private void HandleReactionSetup() {
+        playerObject.GetComponent<PlayerController>().onActivationEvent += HandleReact;
+    }
+
+    //------------------------------------------------------
+    //                  GENERAL FUNCTIONS
+    //------------------------------------------------------
+
+    public void HandleWanderMovement() {
+        if(!isWandering) {
+            StartCoroutine(Wander());
+        }
+        if(isRotatingRight) {
+            transform.Rotate(transform.up * Time.deltaTime * rotationSpeed);
+        }
+        if(isRotatingLeft) {
+            transform.Rotate(transform.up * Time.deltaTime * -rotationSpeed);
+        }
+        if(isWalking) {
+            transform.position += transform.forward * Time.deltaTime * moveSpeed;
+        }
+    }
+
+    private void TurnAround() {
+        transform.Rotate(0, 180f, 0, Space.World);
+    }
+
+    private void DetermineTarget() {
+        levelRequirements = levelManager.GetLevelRequirementList();
+
+        foreach(GameObject requirement in levelRequirements) {
+            bool currentState = requirement.GetComponent<InteractableController>().GetActiveState();
+            if(!currentState) {
+                currentTarget = requirement;
+                return;
+            }
+        }
+    }
+
+    private void ApproachTarget() {
+        transform.LookAt(currentTarget.transform);
+        Vector3 currentRotation = transform.eulerAngles;
+
+        Quaternion idealAngle = Quaternion.Euler(0, currentRotation.y, 0);
+        transform.rotation = idealAngle;
+
+        if(!nearTarget) {
+            isWalking = true;
+        }
+        
+        if(isWalking) {
+            transform.position += transform.forward * Time.deltaTime * moveSpeed;
+        }
+
+        
+    }
 
     //------------------------------------------------------
     //                  REACT FUNCTIONS
     //------------------------------------------------------
+
+    private void HandleReact() {
+        StartCoroutine(TargetRequirement());
+    }
 
     //------------------------------------------------------
     //                  INTERACT FUNCTIONS

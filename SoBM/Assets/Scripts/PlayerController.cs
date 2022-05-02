@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,8 @@ public class PlayerController : MonoBehaviour
     private GameManager gameManager;
     [SerializeField] private Camera camera;
     [SerializeField] private InventoryManager inventoryManager;
+
+    public event Action onActivationEvent;
 
     // Player Related
 
@@ -193,6 +196,16 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerExit(Collider info) {
         
+    }
+
+    //------------------------------------------------------
+    //          MISCELLANEOUS FUNCTIONS
+    //------------------------------------------------------
+
+    public void ActivationEvent() {
+        if(onActivationEvent != null) {
+            onActivationEvent();
+        }
     }
 
 }

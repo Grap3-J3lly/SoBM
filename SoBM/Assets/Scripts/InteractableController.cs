@@ -8,7 +8,21 @@ public class InteractableController : MonoBehaviour
     //                  VARIABLES
     //------------------------------------------------------
     
+    // Managers
     private GameManager gameManager;
+    private LevelManager levelManager;
+    private GameObject playerObject;
+
+    // General
+
+    public enum InteractableType {
+        Switch,
+        Button,
+        Block,
+        Exit
+    }
+
+    [SerializeField] private InteractableType interactType;
 
     [SerializeField] private bool activeState = false;
     private bool triggered = false;
@@ -21,14 +35,12 @@ public class InteractableController : MonoBehaviour
     [SerializeField] private float triggerDepressedHeight = .125f;
     [SerializeField] private float triggerPressedHeight = 0;
 
+    //------------------------------------------------------
+    //                  GETTERS/SETTERS
+    //------------------------------------------------------
 
-    public enum InteractableType {
-        Switch,
-        Button,
-        Block
-    }
-
-    [SerializeField] private InteractableType interactType;
+    public bool GetActiveState() {return activeState;}
+    public void SetActiveState(bool newValue) {activeState = newValue;}
 
     //------------------------------------------------------
     //                  STANDARD FUNCTIONS
@@ -36,13 +48,20 @@ public class InteractableController : MonoBehaviour
 
     private void Awake() {
         gameManager = GameManager.Instance;
+        
+        //StartCoroutine(gameManager.Reset());
+    }
+
+    private void Start() {
+        levelManager = gameManager.GetLevels()[gameManager.GetCurrentLevelNum()];
+        playerObject = gameManager.GetPlayerObject();
+
         if(interactType == InteractableType.Switch) {
             RotateSwivel(activeState);
         }
         if(interactType == InteractableType.Button) {
             ShiftButton(activeState);
         }
-        
     }
 
     private void Update() {
@@ -52,73 +71,104 @@ public class InteractableController : MonoBehaviour
         if(interactType == InteractableType.Button) {
             ShiftButton(activeState);
         }
+        if(interactType == InteractableType.Exit) {
+            if(levelManager == null) {
+                StartCoroutine(gameManager.Reset());
+                return;
+            }
+                if(levelManager.GetRequirementCount() > 0) {ToggleItem(true);}
+                else {ToggleItem(false);}
+            
+        }
     }
 
     //------------------------------------------------------
-    //                  COLLISION FUNCTIONS
+    //          STANDARD COLLISION FUNCTIONS
     //------------------------------------------------------
 
     private void OnTriggerEnter(Collider info) {
         if(!triggered){
             triggered = true;
             Debug.Log("Triggered by: " + info.gameObject.tag);
-
-
-            if(info.gameObject.tag == "Player") {
-            PlayerController tempController = info.gameObject.GetComponentInParent<PlayerController>();
-            tempController.SetZoneEntered(true);
-            tempController.SetObjectInZone(gameObject);
-
-            if(this.interactType == InteractableType.Button) {
-                gameObject.GetComponent<BoxCollider>().enabled = false;
-                HandleButtonInteraction();
-            }
-            StartCoroutine(Reset());
-        }
+            CheckTriggerOrigin(info.gameObject);
+            StartCoroutine(gameManager.Reset());
+            HandleBoxCollider(true);
         }
     }
 
     private void OnTriggerExit(Collider info) {
         Debug.Log("Leaving Interact Zone");
-
-        if(info.gameObject.tag == "Player") {
-
-            PlayerController tempController = info.gameObject.GetComponentInParent<PlayerController>();
-            tempController.SetZoneEntered(false);
-            tempController.SetObjectInZone(null);
-            
-            if(this.interactType == InteractableType.Button) {
-                gameObject.GetComponent<BoxCollider>().enabled = true;
-            }
-
-        }
-
+        
+        triggered = false;
+        CheckTriggerOrigin(info.gameObject);
     }
 
     //------------------------------------------------------
-    //                  INTERACTION FUNCTIONS
+    //          CUSTOM COLLISION FUNCTIONS
+    //------------------------------------------------------
+
+    private void CheckTriggerOrigin(GameObject origin) {
+        
+        if(origin.tag == "Player" && triggered) {
+
+            PlayerController tempController = origin.GetComponentInParent<PlayerController>();
+            tempController.SetZoneEntered(true);
+            tempController.SetObjectInZone(gameObject);
+
+            HandleBoxCollider(false);
+            if(this.interactType == InteractableType.Button) {
+                HandleButtonInteraction();
+            }
+            if(this.interactType == InteractableType.Exit) {
+                CheckExit(activeState);
+            }
+        }
+        else if(origin.tag == "Player" && !triggered) {
+            PlayerController tempController = origin.GetComponentInParent<PlayerController>();
+            tempController.SetZoneEntered(false);
+            tempController.SetObjectInZone(null);
+        }
+        else {
+            Debug.Log("Other Trigger Occurred");
+        }
+    }
+
+    private void HandleBoxCollider(bool active) {
+        gameObject.GetComponent<BoxCollider>().enabled = active;
+    }
+
+    //------------------------------------------------------
+    //          PRIMARY INTERACTION FUNCTIONS
     //------------------------------------------------------
 
     public void HandleInteraction(InventoryManager inventoryManager) {
         
         if(this.interactType == InteractableType.Block) {
-            HandleButtonInteraction();
+            HandleBlockInteraction(inventoryManager);
         }
 
         if(this.interactType == InteractableType.Switch) {
             HandleSwitchInteraction();
         }
 
-        if(this.interactType == InteractableType.Block) {
-            HandleBlockInteraction(inventoryManager);
+        if(this.interactType == InteractableType.Button) {
+            HandleButtonInteraction();
+        }
+
+        if(this.interactType == InteractableType.Exit) {
+            HandleExitInteraction();
         }
     }
 
     private void HandleSwitchInteraction() {
+        playerObject.GetComponent<PlayerController>().ActivationEvent();
+        UpdateLevelManager(activeState);
         ToggleItem(activeState);
     }
 
     private void HandleButtonInteraction() {
+        playerObject.GetComponent<PlayerController>().ActivationEvent();
+        UpdateLevelManager(activeState);
         ToggleItem(activeState);
     }
 
@@ -129,8 +179,12 @@ public class InteractableController : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    private void HandleExitInteraction() {
+        CheckExit(activeState);
+    }
+
     //------------------------------------------------------
-    //                  MISCELLANEOUS FUNCTIONS
+    //          MISCELLANEOUS INTERACTION FUNCTIONS
     //------------------------------------------------------
 
     private void ToggleItem(bool active) {
@@ -166,9 +220,26 @@ public class InteractableController : MonoBehaviour
         }
     }
 
-    IEnumerator Reset() {
-        yield return new WaitForSeconds(2.5f);
-        triggered = false;
+    private void CheckExit(bool unlocked) {
+        if(unlocked) {
+            Debug.Log("Door is unlocked, level complete");
+        }
+        else {
+            Debug.Log("Door is locked. Requirements remaining: " + levelManager.GetRequirementCount());
+        }
+    }
+
+    private void UpdateLevelManager(bool active) {
+        int currentCount = levelManager.GetRequirementCount();
+
+        Debug.Log("Before Count Change: " + currentCount);
+        if(active) {
+            levelManager.SetRequirementCount(++currentCount);
+        }
+        else {
+            levelManager.SetRequirementCount(--currentCount);
+        }
+        Debug.Log("After Count Change: " + currentCount);
     }
 
 }
