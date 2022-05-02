@@ -33,6 +33,9 @@ public class GameManager : MonoBehaviour
     public List<LevelManager> GetLevels() {return levels;}
     public void SetLevels(List<LevelManager> newList) {levels = newList;}
 
+    public float GetBaseResetTime() {return baseResetTime;}
+    public void SetBaseResetTime(float newResetTime) {baseResetTime = newResetTime;}
+
     public int GetCurrentLevelNum() {return currentLevelNum;}
     public void SetCurrentLevelNum(int newLevelNum) {currentLevelNum = newLevelNum;}
 
@@ -53,8 +56,12 @@ public class GameManager : MonoBehaviour
     //                  COROUTINES
     //------------------------------------------------------
 
-    public IEnumerator Reset() {
-        yield return new WaitForSeconds(baseResetTime);
+    public IEnumerator Reset(float resetTime) {
+        yield return new WaitForSeconds(resetTime);
+    }
+
+    public IEnumerator NextFrame() {
+        yield return new WaitForEndOfFrame();
     }
 
     //------------------------------------------------------
@@ -65,16 +72,6 @@ public class GameManager : MonoBehaviour
         Instance = this;
         Random.InitState(initialSeed);
         currentState = Random.state;
-    }
-
-    private void Start()
-    {
-        
-    }
-
-    private void Update()
-    {
-        
     }
 
     //------------------------------------------------------

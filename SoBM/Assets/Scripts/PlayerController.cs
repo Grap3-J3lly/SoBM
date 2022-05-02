@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
     private GameManager gameManager;
     [SerializeField] private Camera camera;
     [SerializeField] private InventoryManager inventoryManager;
+    [SerializeField] private GameObject interactionZone;
 
     public event Action onActivationEvent;
 
@@ -38,6 +39,8 @@ public class PlayerController : MonoBehaviour
     private bool zoneEntered = false;
     private GameObject objectInZone;
 
+    // Placement Related
+    [SerializeField] Vector3 placementOffset = new Vector3(1f, 0f, 1f);
 
     //------------------------------------------------------
     //             GETTERS/SETTERS
@@ -50,19 +53,37 @@ public class PlayerController : MonoBehaviour
     public void SetObjectInZone(GameObject newObject) {objectInZone = newObject;}
 
     //------------------------------------------------------
+    //                  COROUTINES
+    //------------------------------------------------------
+
+    public IEnumerator ControlledSetup() {
+        inputControl = new InputControl();
+        charController = GetComponent<CharacterController>();
+        yield return new WaitUntil(() => GameManager.Instance != null);
+        gameManager = GameManager.Instance;
+        
+        //yield return new WaitForEndOfFrame();
+        HandleMovementSetup();
+        //yield return new WaitForEndOfFrame();
+        HandleInteractionSetup();
+        //yield return new WaitForEndOfFrame();
+        HandlePlacementSetup();
+        //yield return new WaitForEndOfFrame();
+    }
+
+    //------------------------------------------------------
     //             STANDARD FUNCTIONS
     //------------------------------------------------------
 
     private void Awake() {
-        HandleGeneralSetup();
-        HandleMovementSetup();
-        HandleInteractionSetup();
+        HandleAllSetup();
     }
 
     private void OnEnable() {
         
         inputControl.CharacterControls.Move.Enable();
         inputControl.CharacterControls.Interact.Enable();
+        inputControl.CharacterControls.Place.Enable();
 
         //UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown += OnInteract;
     }
@@ -75,15 +96,13 @@ public class PlayerController : MonoBehaviour
         HandleRotation();
         HandleMovement();
 
-        //HandleInteraction();
-
-
     }
 
     private void OnDisable() {
 
         inputControl.CharacterControls.Move.Disable();
         inputControl.CharacterControls.Interact.Disable();
+        inputControl.CharacterControls.Place.Disable();
 
         //UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown -= OnInteract;
         EnhancedTouchSupport.Disable();
@@ -93,10 +112,8 @@ public class PlayerController : MonoBehaviour
     //             SETUP FUNCTIONS
     //------------------------------------------------------
 
-    private void HandleGeneralSetup() {
-        gameManager = GameManager.Instance;
-        inputControl = new InputControl();
-        charController = GetComponent<CharacterController>();
+    private void HandleAllSetup() {
+        StartCoroutine(ControlledSetup());
     }
 
     private void HandleMovementSetup() {
@@ -111,6 +128,10 @@ public class PlayerController : MonoBehaviour
         inputControl.CharacterControls.Interact.performed += OnInteract;
 
         EnhancedTouchSupport.Enable();
+    }
+
+    private void HandlePlacementSetup() {
+        inputControl.CharacterControls.Place.performed += OnPlacement;
     }
 
     //------------------------------------------------------
@@ -176,26 +197,52 @@ public class PlayerController : MonoBehaviour
         if(zoneEntered) {
             Debug.Log("Interaction ocurring with object in zone");
             if(objectInZone != null && objectInZone.tag == "Interactable") {
-                //Debug.Log("Checking Object: " + objectInZone.gameObject.name);
                 objectInZone.GetComponent<InteractableController>().HandleInteraction(inventoryManager);
-                //objectInZone.SetActive(false);
             }
         }
 
     }
 
-    // private void HandleInteraction() {
-    //     if(interacting) {
-    //         Debug.Log("Interaction Triggered");
-    //     }
-    // }
+    public void HandleInteraction(GameObject interactionOrigin, bool triggered) {
+        InteractableController tempController = interactionOrigin.GetComponent<InteractableController>();
+        if(triggered) {
+            zoneEntered = true;
+            objectInZone = interactionOrigin;
 
-    private void OnTriggerEnter(Collider info) {
-        
+            if(tempController.GetInteractType() == InteractableController.InteractableType.Button) {
+                tempController.HandleInteraction(inventoryManager);
+            }
+        }
+        else {
+            zoneEntered = false;
+            objectInZone = null;
+        }
     }
 
-    private void OnTriggerExit(Collider info) {
+    //------------------------------------------------------
+    //          PLACEMENT FUNCTIONS
+    //------------------------------------------------------
+
+    private void OnPlacement(InputAction.CallbackContext context) {
+        Vector3 placement = HandlePlacementLocation();
+        GameObject selectedObject = inventoryManager.GetSelectedObject();
+        PlaceItemInWorld(selectedObject, placement);
+    }
+
+    private Vector3 HandlePlacementLocation() {
+        Vector3 placement = interactionZone.transform.forward + interactionZone.transform.position;
+        Debug.Log("Forward: " + interactionZone.transform.forward);
+        Debug.Log("Placement: " + placement);
+
+        return placement;
+    }
+
+    private void PlaceItemInWorld(GameObject selectedObject, Vector3 placement) {
+        selectedObject.SetActive(true);
+        LevelManager currentLevelManager = gameManager.GetLevels()[gameManager.GetCurrentLevelNum()];
         
+        selectedObject.transform.SetParent(currentLevelManager.transform);
+        selectedObject.transform.position = placement;
     }
 
     //------------------------------------------------------

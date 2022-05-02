@@ -17,8 +17,11 @@ public class AIController : MonoBehaviour
 
     private GameObject currentTarget;
     private bool nearTarget = false;
+    [SerializeField] private bool maintainInventory = false;
 
     [SerializeField] private float delay = 1f;
+
+    [SerializeField] private InventoryManager inventoryManager;
 
     // Movement Focus
 
@@ -49,6 +52,13 @@ public class AIController : MonoBehaviour
     }
 
     [SerializeField] private Behaviors behavior;
+
+    //------------------------------------------------------
+    //                  GETTERS/SETTERS
+    //------------------------------------------------------
+
+    public InventoryManager GetInventoryManager() {return inventoryManager;}
+    public void SetInventoryManager(InventoryManager newManager) {inventoryManager = newManager;}
 
     //------------------------------------------------------
     //                  COROUTINES
@@ -119,7 +129,7 @@ public class AIController : MonoBehaviour
         if(info.gameObject.tag == "Wall") {
             Debug.Log("Colliding with wall");
             TurnAround();
-            gameManager.Reset();            
+            gameManager.Reset(gameManager.GetBaseResetTime());            
         }
 
         if(currentTarget != null && info.gameObject == currentTarget) {
@@ -183,6 +193,7 @@ public class AIController : MonoBehaviour
                 return;
             }
         }
+        currentTarget = null;
     }
 
     private void ApproachTarget() {
@@ -199,8 +210,19 @@ public class AIController : MonoBehaviour
         if(isWalking) {
             transform.position += transform.forward * Time.deltaTime * moveSpeed;
         }
+    }
 
-        
+    public void HandleInteraction(GameObject interactionOrigin, bool triggered) {
+        InteractableController tempController = interactionOrigin.GetComponent<InteractableController>();
+        if(!maintainInventory && tempController.GetInteractType() == InteractableController.InteractableType.Block) {
+            return;
+        }
+        if(triggered) {
+            tempController.HandleInteraction(inventoryManager);
+        }
+        else {
+
+        }
     }
 
     //------------------------------------------------------

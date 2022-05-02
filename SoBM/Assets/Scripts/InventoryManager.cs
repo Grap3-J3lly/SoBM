@@ -14,9 +14,17 @@ public class InventoryManager : MonoBehaviour
     private GameObject itemButton;
     [SerializeField] private GameObject itemUIParent;
 
-    public List<GameObject> inventory = new List<GameObject>();
+    [SerializeField] private GameObject selectedObject;
 
+    public List<GameObject> inventory = new List<GameObject>();
     private List<GameObject> inventoryButtons = new List<GameObject>();
+
+    //------------------------------------------------------
+    //                  GETTERS/SETTERS
+    //------------------------------------------------------
+
+    public GameObject GetSelectedObject() {return selectedObject;}
+    public void SetSelectedObject(GameObject newObject) {selectedObject = newObject;}
 
     //------------------------------------------------------
     //                  STANDARD FUNCTIONS
@@ -44,11 +52,16 @@ public class InventoryManager : MonoBehaviour
 
         RectTransform tempTransform = itemUIParent.GetComponent<RectTransform>();
 
-        GameObject newButton = (GameObject)Instantiate(itemButton, tempTransform.position, tempTransform.rotation);
-        newButton.transform.SetParent(itemUIParent.transform);
-        newButton.name = buttonLabel + "UIButton";
+        GameObject newButtonObject = (GameObject)Instantiate(itemButton, tempTransform.position, tempTransform.rotation);
+        newButtonObject.transform.SetParent(itemUIParent.transform);
+        newButtonObject.name = buttonLabel + "UIButton";
 
-        newButton.GetComponentInChildren<TMP_Text>().text = buttonLabel;
+        InventoryButton newButtonController = newButtonObject.GetComponent<InventoryButton>();
+        newButtonController.SetName(buttonLabel);
+        newButtonController.SetButtonObject(newButtonObject);
+        newButtonController.SetReferencedItem(newItem);
+
+        inventoryButtons.Add(newButtonObject);
     }
 
 }

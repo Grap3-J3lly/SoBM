@@ -39,8 +39,36 @@ public class InteractableController : MonoBehaviour
     //                  GETTERS/SETTERS
     //------------------------------------------------------
 
+    public InteractableType GetInteractType() {return interactType;}
+    public void SetInteractType(InteractableType newType) {interactType = newType;}
+
     public bool GetActiveState() {return activeState;}
     public void SetActiveState(bool newValue) {activeState = newValue;}
+
+    //------------------------------------------------------
+    //                  COROUTINES
+    //------------------------------------------------------
+
+    // Works with triggered variable to provide controlled call of trigger when many are ocurring from one object
+    public IEnumerator ControlledTrigger(Collider info, bool triggerEnter) {
+
+        if(triggerEnter) {
+            // Triggered assists in stopping multiple calls of OnTriggerEnter from one collision
+            if(!triggered){
+                triggered = true;
+                yield return new WaitForEndOfFrame();
+                HandleBoxCollider(false);
+                CheckTriggerOrigin(info.gameObject);
+                yield return new WaitForEndOfFrame();
+                HandleBoxCollider(true);
+            }
+        }
+        else {
+            triggered = false;
+            CheckTriggerOrigin(info.gameObject);
+        }
+
+    }
 
     //------------------------------------------------------
     //                  STANDARD FUNCTIONS
@@ -48,8 +76,6 @@ public class InteractableController : MonoBehaviour
 
     private void Awake() {
         gameManager = GameManager.Instance;
-        
-        //StartCoroutine(gameManager.Reset());
     }
 
     private void Start() {
@@ -73,7 +99,7 @@ public class InteractableController : MonoBehaviour
         }
         if(interactType == InteractableType.Exit) {
             if(levelManager == null) {
-                StartCoroutine(gameManager.Reset());
+                StartCoroutine(gameManager.Reset(gameManager.GetBaseResetTime()));
                 return;
             }
                 if(levelManager.GetRequirementCount() > 0) {ToggleItem(true);}
@@ -87,20 +113,11 @@ public class InteractableController : MonoBehaviour
     //------------------------------------------------------
 
     private void OnTriggerEnter(Collider info) {
-        if(!triggered){
-            triggered = true;
-            Debug.Log("Triggered by: " + info.gameObject.tag);
-            CheckTriggerOrigin(info.gameObject);
-            StartCoroutine(gameManager.Reset());
-            HandleBoxCollider(true);
-        }
+        StartCoroutine(ControlledTrigger(info, true));
     }
 
     private void OnTriggerExit(Collider info) {
-        Debug.Log("Leaving Interact Zone");
-        
-        triggered = false;
-        CheckTriggerOrigin(info.gameObject);
+        StartCoroutine(ControlledTrigger(info, false));
     }
 
     //------------------------------------------------------
@@ -109,31 +126,18 @@ public class InteractableController : MonoBehaviour
 
     private void CheckTriggerOrigin(GameObject origin) {
         
-        if(origin.tag == "Player" && triggered) {
-
-            PlayerController tempController = origin.GetComponentInParent<PlayerController>();
-            tempController.SetZoneEntered(true);
-            tempController.SetObjectInZone(gameObject);
-
-            HandleBoxCollider(false);
-            if(this.interactType == InteractableType.Button) {
-                HandleButtonInteraction();
-            }
-            if(this.interactType == InteractableType.Exit) {
-                CheckExit(activeState);
-            }
+        if(origin.tag == "Player") {
+            origin.GetComponentInParent<PlayerController>().HandleInteraction(gameObject, triggered);
         }
-        else if(origin.tag == "Player" && !triggered) {
-            PlayerController tempController = origin.GetComponentInParent<PlayerController>();
-            tempController.SetZoneEntered(false);
-            tempController.SetObjectInZone(null);
+        else if(origin.tag == "NPC") {
+            origin.GetComponentInParent<AIController>().HandleInteraction(gameObject, triggered);
         }
         else {
             Debug.Log("Other Trigger Occurred");
         }
     }
 
-    private void HandleBoxCollider(bool active) {
+    public void HandleBoxCollider(bool active) {
         gameObject.GetComponent<BoxCollider>().enabled = active;
     }
 
@@ -160,6 +164,16 @@ public class InteractableController : MonoBehaviour
         }
     }
 
+    private void HandleBlockInteraction(InventoryManager inventoryManager) {
+
+        if(inventoryManager.transform.parent.gameObject.tag == "Player") {
+            inventoryManager.CreateButton(gameObject);
+        }
+        inventoryManager.inventory.Add(gameObject);
+        transform.SetParent(inventoryManager.gameObject.transform);
+        gameObject.SetActive(false);
+    }
+
     private void HandleSwitchInteraction() {
         playerObject.GetComponent<PlayerController>().ActivationEvent();
         UpdateLevelManager(activeState);
@@ -170,13 +184,6 @@ public class InteractableController : MonoBehaviour
         playerObject.GetComponent<PlayerController>().ActivationEvent();
         UpdateLevelManager(activeState);
         ToggleItem(activeState);
-    }
-
-    private void HandleBlockInteraction(InventoryManager inventoryManager) {
-        inventoryManager.inventory.Add(gameObject);
-        inventoryManager.CreateButton(gameObject);
-        transform.SetParent(inventoryManager.gameObject.transform);
-        gameObject.SetActive(false);
     }
 
     private void HandleExitInteraction() {
@@ -220,7 +227,7 @@ public class InteractableController : MonoBehaviour
         }
     }
 
-    private void CheckExit(bool unlocked) {
+    public void CheckExit(bool unlocked) {
         if(unlocked) {
             Debug.Log("Door is unlocked, level complete");
         }
