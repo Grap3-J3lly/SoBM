@@ -260,6 +260,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemyAI Interact
       objectReference: {fileID: 0}
+    - target: {fileID: 4249538824707344973, guid: ad58e56faa0da8944a50c013325dd0d0, type: 3}
+      propertyPath: behavior
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4249538824707344973, guid: ad58e56faa0da8944a50c013325dd0d0, type: 3}
+      propertyPath: maintainInventory
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4249538825176964172, guid: ad58e56faa0da8944a50c013325dd0d0, type: 3}
       propertyPath: itemUIParent
       value: 
@@ -743,6 +751,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4249538824707344973, guid: ad58e56faa0da8944a50c013325dd0d0, type: 3}
+      propertyPath: behavior
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4249538825176964172, guid: ad58e56faa0da8944a50c013325dd0d0, type: 3}
       propertyPath: itemUIParent
       value: 
@@ -1018,6 +1030,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2014108119}
     m_Modifications:
+    - target: {fileID: 1428069436267717683, guid: a40264c31509b3045a0a28baf437e55e, type: 3}
+      propertyPath: m_Size.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1428069436267717683, guid: a40264c31509b3045a0a28baf437e55e, type: 3}
+      propertyPath: m_Size.z
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1428069436267717683, guid: a40264c31509b3045a0a28baf437e55e, type: 3}
+      propertyPath: m_Center.z
+      value: 0.75
+      objectReference: {fileID: 0}
     - target: {fileID: 6827007076437454131, guid: a40264c31509b3045a0a28baf437e55e, type: 3}
       propertyPath: itemUIParent
       value: 
@@ -1073,6 +1097,18 @@ PrefabInstance:
     - target: {fileID: 8602824017358934027, guid: a40264c31509b3045a0a28baf437e55e, type: 3}
       propertyPath: m_TagString
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 8602824017358934037, guid: a40264c31509b3045a0a28baf437e55e, type: 3}
+      propertyPath: placementOffset.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8602824017358934037, guid: a40264c31509b3045a0a28baf437e55e, type: 3}
+      propertyPath: placementOffset.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8602824017358934037, guid: a40264c31509b3045a0a28baf437e55e, type: 3}
+      propertyPath: placementOffset.z
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8602824017358934037, guid: a40264c31509b3045a0a28baf437e55e, type: 3}
       propertyPath: interactionZoneCollider

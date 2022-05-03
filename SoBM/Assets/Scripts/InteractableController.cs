@@ -26,6 +26,7 @@ public class InteractableController : MonoBehaviour
 
     [SerializeField] private bool activeState = false;
     private bool triggered = false;
+    private bool colliding = false;
 
     // Switch Only
     [SerializeField] private GameObject swivel;
@@ -57,7 +58,10 @@ public class InteractableController : MonoBehaviour
             if(!triggered){
                 triggered = true;
                 yield return new WaitForEndOfFrame();
-                HandleBoxCollider(false);
+                
+                if(this.interactType == InteractableType.Button) {
+                    HandleBoxCollider(false);
+                }
                 CheckTriggerOrigin(info.gameObject);
                 yield return new WaitForEndOfFrame();
                 HandleBoxCollider(true);
@@ -68,6 +72,25 @@ public class InteractableController : MonoBehaviour
             CheckTriggerOrigin(info.gameObject);
         }
 
+    }
+
+    public IEnumerator ControlledCollision(Collision info, bool collisionEnter) {
+        if(collisionEnter) {
+            if(!colliding) {
+                colliding = true;
+                yield return new WaitForEndOfFrame();
+                HandleButtonCollisions(info.gameObject);
+                yield return new WaitForEndOfFrame();
+            }
+        }
+        else {
+            colliding = false;
+            if(this.interactType == InteractableType.Button) {
+                HandleBoxCollider(true);
+                HandleButtonInteraction();
+                Debug.Log("Running this");
+            }
+        }
     }
 
     //------------------------------------------------------
@@ -91,6 +114,11 @@ public class InteractableController : MonoBehaviour
     }
 
     private void Update() {
+        if(interactType == InteractableType.Block) {
+            if(transform.position.y != .5f) {
+                transform.position = new Vector3(transform.position.x, .5f, transform.position.z);
+            }
+        }
         if(interactType == InteractableType.Switch) {
             RotateSwivel(activeState);
         }
@@ -120,6 +148,27 @@ public class InteractableController : MonoBehaviour
         StartCoroutine(ControlledTrigger(info, false));
     }
 
+    private void OnCollisionEnter(Collision info) {
+        StartCoroutine(ControlledCollision(info, true));
+    }
+
+    private void OnCollisionStay(Collision info) {
+        
+        if(this.interactType == InteractableType.Button && info.gameObject.tag == "Interactable" 
+        && info.gameObject.GetComponent<InteractableController>().GetInteractType() == InteractableType.Block) {
+            HandleBoxCollider(false);
+        }
+    }
+
+    private void OnCollisionExit(Collision info) {
+        StartCoroutine(ControlledCollision(info, false));
+        // if(this.interactType == InteractableType.Button && info.gameObject.tag == "Interactable" 
+        // && info.gameObject.GetComponent<InteractableController>().GetInteractType() == InteractableType.Block) {
+        //     Debug.Log("Not reaching Here?");
+        //     HandleButtonInteraction();            
+        // }
+    }
+
     //------------------------------------------------------
     //          CUSTOM COLLISION FUNCTIONS
     //------------------------------------------------------
@@ -137,8 +186,20 @@ public class InteractableController : MonoBehaviour
         }
     }
 
-    public void HandleBoxCollider(bool active) {
+    private void HandleBoxCollider(bool active) {
         gameObject.GetComponent<BoxCollider>().enabled = active;
+    }
+
+    // Not to be confused with HandleButtonTriggers(), which doesn't exist
+    private void HandleButtonCollisions(GameObject origin) {
+        if(origin.tag == "Interactable") {
+            // Debug.Log("Showed that origin is an interactable" + gameObject.name);
+            InteractableController.InteractableType originType = origin.GetComponent<InteractableController>().GetInteractType();
+            if(this.interactType == InteractableType.Button && originType == InteractableType.Block) {
+                HandleBoxCollider(false);
+                HandleButtonInteraction();
+            }
+        }
     }
 
     //------------------------------------------------------

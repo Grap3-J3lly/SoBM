@@ -99,7 +99,15 @@ public class AIController : MonoBehaviour
     public IEnumerator TargetRequirement() {
         yield return new WaitForSeconds(delay);
 
-        DetermineTarget();
+        if(behavior == Behaviors.React) {
+            DetermineTargetReact();
+        }
+        if(behavior == Behaviors.Interact) {
+            DetermineTargetInteract();
+        }
+        if(behavior == Behaviors.Pursue) {
+            DetermineTargetPursuit();
+        }
         Debug.Log("Current Target: " + currentTarget);
     }
 
@@ -147,22 +155,20 @@ public class AIController : MonoBehaviour
         levelManager = gameManager.GetLevels()[gameManager.GetCurrentLevelNum()];
         levelRequirements = levelManager.GetLevelRequirementList();
         playerObject = gameManager.GetPlayerObject();
-        HandleBehaviorSetup(behavior);
+        HandleBehaviorSetup();
     }
 
-    private void HandleBehaviorSetup(Behaviors currentBehavior) {
-        if(currentBehavior == Behaviors.React) {
-            HandleReactionSetup();
-        }
-    }
-
-    private void HandleReactionSetup() {
-        playerObject.GetComponent<PlayerController>().onActivationEvent += HandleReact;
+    private void HandleBehaviorSetup() {
+        playerObject.GetComponent<PlayerController>().onActivationEvent += HandleBehaviorChange;
     }
 
     //------------------------------------------------------
     //                  GENERAL FUNCTIONS
     //------------------------------------------------------
+
+    private void HandleBehaviorChange() {
+        StartCoroutine(TargetRequirement());
+    }
 
     public void HandleWanderMovement() {
         if(!isWandering) {
@@ -181,19 +187,6 @@ public class AIController : MonoBehaviour
 
     private void TurnAround() {
         transform.Rotate(0, 180f, 0, Space.World);
-    }
-
-    private void DetermineTarget() {
-        levelRequirements = levelManager.GetLevelRequirementList();
-
-        foreach(GameObject requirement in levelRequirements) {
-            bool currentState = requirement.GetComponent<InteractableController>().GetActiveState();
-            if(!currentState) {
-                currentTarget = requirement;
-                return;
-            }
-        }
-        currentTarget = null;
     }
 
     private void ApproachTarget() {
@@ -229,15 +222,31 @@ public class AIController : MonoBehaviour
     //                  REACT FUNCTIONS
     //------------------------------------------------------
 
-    private void HandleReact() {
-        StartCoroutine(TargetRequirement());
+    private void DetermineTargetReact() {
+        levelRequirements = levelManager.GetLevelRequirementList();
+
+        foreach(GameObject requirement in levelRequirements) {
+            bool currentState = requirement.GetComponent<InteractableController>().GetActiveState();
+            if(!currentState) {
+                currentTarget = requirement;
+                return;
+            }
+        }
+        currentTarget = null;
     }
 
     //------------------------------------------------------
     //                  INTERACT FUNCTIONS
     //------------------------------------------------------
+    private void DetermineTargetInteract() {
 
+    }
     //------------------------------------------------------
     //                  PURSUE FUNCTIONS
     //------------------------------------------------------
+
+    private void DetermineTargetPursuit() {
+
+    }
+
 }

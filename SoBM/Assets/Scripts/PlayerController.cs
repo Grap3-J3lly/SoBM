@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour
     private GameObject objectInZone;
 
     // Placement Related
-    [SerializeField] Vector3 placementOffset = new Vector3(1f, 0f, 1f);
+    [SerializeField] Vector3 placementOffset = new Vector3(10f, 0f, 10f);
 
     //------------------------------------------------------
     //             GETTERS/SETTERS
@@ -224,15 +224,15 @@ public class PlayerController : MonoBehaviour
     //------------------------------------------------------
 
     private void OnPlacement(InputAction.CallbackContext context) {
-        Vector3 placement = HandlePlacementLocation();
-        GameObject selectedObject = inventoryManager.GetSelectedObject();
-        PlaceItemInWorld(selectedObject, placement);
+        if(inventoryManager.GetSelectedObject() != null) {
+            Vector3 placement = HandlePlacementLocation();
+            GameObject selectedObject = inventoryManager.GetSelectedObject();
+            PlaceItemInWorld(selectedObject, placement);
+        }
     }
 
     private Vector3 HandlePlacementLocation() {
-        Vector3 placement = interactionZone.transform.forward + interactionZone.transform.position;
-        Debug.Log("Forward: " + interactionZone.transform.forward);
-        Debug.Log("Placement: " + placement);
+        Vector3 placement = (placementOffset.z * interactionZone.transform.forward) + interactionZone.transform.position;
 
         return placement;
     }
