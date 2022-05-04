@@ -12,6 +12,7 @@ public class AIController : MonoBehaviour
     private GameManager gameManager;
     private LevelManager levelManager;
     private GameObject playerObject;
+    [SerializeField] private InventoryManager inventoryManager;
 
     private List<GameObject> levelRequirements = new List<GameObject>();
 
@@ -20,8 +21,6 @@ public class AIController : MonoBehaviour
     [SerializeField] private bool maintainInventory = false;
 
     [SerializeField] private float delay = 1f;
-
-    [SerializeField] private InventoryManager inventoryManager;
 
     // Movement Focus
 
@@ -43,6 +42,8 @@ public class AIController : MonoBehaviour
 
     // Interact Focus
     
+    private GameObject selectedItem;
+
     // Pursue Focus
 
     public enum Behaviors {
@@ -99,6 +100,8 @@ public class AIController : MonoBehaviour
     public IEnumerator TargetRequirement() {
         yield return new WaitForSeconds(delay);
 
+        Debug.Log("Determining Target based on Behavior");
+
         if(behavior == Behaviors.React) {
             DetermineTargetReact();
         }
@@ -109,6 +112,20 @@ public class AIController : MonoBehaviour
             DetermineTargetPursuit();
         }
         Debug.Log("Current Target: " + currentTarget);
+    }
+
+    public IEnumerator PausePursuit() {
+        yield return new WaitForSeconds(delay);
+        nearTarget = false;
+    }
+
+    public IEnumerator StorePlayerObject() {
+        Debug.Log("Grabbing Player Object");
+        if(gameManager.GetPlayerObject() == null) {
+            yield return new WaitForEndOfFrame();
+        }
+        playerObject = gameManager.GetPlayerObject();
+        Debug.Log("Grabbing Player Object: " + playerObject);
     }
 
     //------------------------------------------------------
@@ -122,9 +139,15 @@ public class AIController : MonoBehaviour
     private void Update() {
         if(currentTarget == null) {
             HandleWanderMovement();
+            if(behavior == Behaviors.Interact) {
+                CheckInventory();
+            }
         }
         else {
             ApproachTarget();
+            if(behavior == Behaviors.Pursue && nearTarget) {
+                StartCoroutine(PausePursuit());
+            }
         }
         
     }
@@ -134,8 +157,8 @@ public class AIController : MonoBehaviour
     //------------------------------------------------------
 
     private void OnCollisionEnter(Collision info) {
-        if(info.gameObject.tag == "Wall") {
-            Debug.Log("Colliding with wall");
+        if(info.gameObject.tag == "Boundary") {
+            //Debug.Log("Colliding with wall");
             TurnAround();
             gameManager.Reset(gameManager.GetBaseResetTime());            
         }
@@ -144,6 +167,17 @@ public class AIController : MonoBehaviour
             nearTarget = true;
             isWalking = false;
         }
+
+        if(info.gameObject.tag == "Wall") {
+            info.gameObject.GetComponent<BoxCollider>().enabled = false;
+        }
+    }
+
+    private void OnCollisionExit(Collision info) {
+        if(info.gameObject.tag == "Wall" && info.gameObject.GetComponent<BoxCollider>().enabled == false) 
+        {
+            info.gameObject.GetComponent<BoxCollider>().enabled = true;
+        }
     }
 
     //------------------------------------------------------
@@ -151,15 +185,21 @@ public class AIController : MonoBehaviour
     //------------------------------------------------------
 
     private void HandleInitialSetup() {
+        Debug.Log("InitialSetup");
         gameManager = GameManager.Instance;
         levelManager = gameManager.GetLevels()[gameManager.GetCurrentLevelNum()];
         levelRequirements = levelManager.GetLevelRequirementList();
-        playerObject = gameManager.GetPlayerObject();
+        StartCoroutine(StorePlayerObject());
         HandleBehaviorSetup();
     }
 
     private void HandleBehaviorSetup() {
-        playerObject.GetComponent<PlayerController>().onActivationEvent += HandleBehaviorChange;
+        if(behavior == Behaviors.React) {
+            playerObject.GetComponent<PlayerController>().onActivationEvent += HandleBehaviorChange;
+        }
+        if(behavior == Behaviors.Pursue) {
+            HandleBehaviorChange();
+        }
     }
 
     //------------------------------------------------------
@@ -167,7 +207,17 @@ public class AIController : MonoBehaviour
     //------------------------------------------------------
 
     private void HandleBehaviorChange() {
-        StartCoroutine(TargetRequirement());
+        if(behavior == Behaviors.React) {
+            StartCoroutine(TargetRequirement());
+        }
+        if(behavior == Behaviors.Pursue) {
+            Debug.Log("Determined Pursuit behavior");
+            float storeDelay = delay;
+            StartCoroutine(TargetRequirement());
+            delay = delay * 5;
+            StartCoroutine(PausePursuit());
+            delay = storeDelay;
+        }
     }
 
     public void HandleWanderMovement() {
@@ -210,6 +260,10 @@ public class AIController : MonoBehaviour
         if(!maintainInventory && tempController.GetInteractType() == InteractableController.InteractableType.Block) {
             return;
         }
+        // Ignore other interactables
+        if((currentTarget != null && currentTarget != interactionOrigin) || currentTarget == null && behavior != Behaviors.Pursue) {
+            return;
+        }
         if(triggered) {
             tempController.HandleInteraction(inventoryManager);
         }
@@ -239,14 +293,46 @@ public class AIController : MonoBehaviour
     //                  INTERACT FUNCTIONS
     //------------------------------------------------------
     private void DetermineTargetInteract() {
+        levelRequirements = levelManager.GetLevelRequirementList();
+
+        foreach(GameObject requirement in levelRequirements) {
+            bool isButton = requirement.GetComponent<InteractableController>().GetInteractType() == InteractableController.InteractableType.Button;
+            bool isActive = requirement.GetComponent<InteractableController>().GetActiveState();
+
+            //Debug.Log("IsButton: " + isButton + ". IsActive: " + isActive);
+
+            if(isButton && !isActive && selectedItem != null)
+            {
+                currentTarget = requirement;
+                return;
+            }
+        }
+        currentTarget = null;
 
     }
+
+    private void CheckInventory() {
+        List<GameObject> currentInventory = inventoryManager.GetInventory();
+
+        if(currentInventory.Count != 0) {
+            foreach(GameObject item in currentInventory) {
+                if(item.GetComponent<InteractableController>().GetInteractType() == InteractableController.InteractableType.Block) 
+                {
+                    selectedItem = item;
+                    StartCoroutine(TargetRequirement());
+                    return;
+                }
+            }
+        }
+    }
+
     //------------------------------------------------------
     //                  PURSUE FUNCTIONS
     //------------------------------------------------------
 
     private void DetermineTargetPursuit() {
-
+        Debug.Log("Determined Pursuit Behavior, targetting Player");
+        currentTarget = playerObject;
     }
 
 }

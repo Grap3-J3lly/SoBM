@@ -260,6 +260,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemyAI Interact
       objectReference: {fileID: 0}
+    - target: {fileID: 4249538824707344971, guid: ad58e56faa0da8944a50c013325dd0d0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4249538824707344973, guid: ad58e56faa0da8944a50c013325dd0d0, type: 3}
       propertyPath: behavior
       value: 1
@@ -749,7 +753,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4249538824707344971, guid: ad58e56faa0da8944a50c013325dd0d0, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4249538824707344973, guid: ad58e56faa0da8944a50c013325dd0d0, type: 3}
+      propertyPath: delay
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4249538824707344973, guid: ad58e56faa0da8944a50c013325dd0d0, type: 3}
       propertyPath: behavior

@@ -26,6 +26,9 @@ public class InventoryManager : MonoBehaviour
     public GameObject GetSelectedObject() {return selectedObject;}
     public void SetSelectedObject(GameObject newObject) {selectedObject = newObject;}
 
+    public List<GameObject> GetInventory() {return inventory;}
+    public void SetInventory(List<GameObject> newList) {inventory = newList;}
+
     //------------------------------------------------------
     //                  STANDARD FUNCTIONS
     //------------------------------------------------------

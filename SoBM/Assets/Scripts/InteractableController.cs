@@ -28,6 +28,8 @@ public class InteractableController : MonoBehaviour
     private bool triggered = false;
     private bool colliding = false;
 
+    private int activeCollisions = 0;
+
     // Switch Only
     [SerializeField] private GameObject swivel;
 
@@ -75,21 +77,35 @@ public class InteractableController : MonoBehaviour
     }
 
     public IEnumerator ControlledCollision(Collision info, bool collisionEnter) {
+        InteractableType tempType = info.gameObject.GetComponent<InteractableController>().GetInteractType();
         if(collisionEnter) {
             if(!colliding) {
                 colliding = true;
                 yield return new WaitForEndOfFrame();
-                HandleButtonCollisions(info.gameObject);
-                yield return new WaitForEndOfFrame();
+
+                // Turns button off after Block is removed
+                if(this.interactType == InteractableType.Button) {
+                    if(tempType == InteractableType.Block && activeCollisions == 0) {
+                        activeCollisions += 1;
+                        HandleBoxCollider(false);
+                        HandleButtonInteraction();
+                    }
+                }
             }
         }
         else {
-            colliding = false;
+        
+            // Turns button back on after Block is removed
             if(this.interactType == InteractableType.Button) {
-                HandleBoxCollider(true);
-                HandleButtonInteraction();
-                Debug.Log("Running this");
+                if(tempType == InteractableType.Block && activeCollisions == 1) {
+                    activeCollisions -= 1;
+                    yield return new WaitForEndOfFrame();
+                    HandleButtonInteraction();
+                    yield return new WaitForEndOfFrame();
+                    HandleBoxCollider(true);
+                }
             }
+            colliding = false;
         }
     }
 
@@ -149,7 +165,9 @@ public class InteractableController : MonoBehaviour
     }
 
     private void OnCollisionEnter(Collision info) {
-        StartCoroutine(ControlledCollision(info, true));
+        if(info.gameObject.tag == "Interactable") {
+            StartCoroutine(ControlledCollision(info, true));
+        }
     }
 
     private void OnCollisionStay(Collision info) {
@@ -161,12 +179,9 @@ public class InteractableController : MonoBehaviour
     }
 
     private void OnCollisionExit(Collision info) {
-        StartCoroutine(ControlledCollision(info, false));
-        // if(this.interactType == InteractableType.Button && info.gameObject.tag == "Interactable" 
-        // && info.gameObject.GetComponent<InteractableController>().GetInteractType() == InteractableType.Block) {
-        //     Debug.Log("Not reaching Here?");
-        //     HandleButtonInteraction();            
-        // }
+        if(info.gameObject.tag == "Interactable") {
+            StartCoroutine(ControlledCollision(info, false));
+        }
     }
 
     //------------------------------------------------------
@@ -191,12 +206,12 @@ public class InteractableController : MonoBehaviour
     }
 
     // Not to be confused with HandleButtonTriggers(), which doesn't exist
-    private void HandleButtonCollisions(GameObject origin) {
+    private void HandleButtonCollisions(GameObject origin, bool active) {
         if(origin.tag == "Interactable") {
             // Debug.Log("Showed that origin is an interactable" + gameObject.name);
             InteractableController.InteractableType originType = origin.GetComponent<InteractableController>().GetInteractType();
             if(this.interactType == InteractableType.Button && originType == InteractableType.Block) {
-                HandleBoxCollider(false);
+                HandleBoxCollider(active);
                 HandleButtonInteraction();
             }
         }
@@ -300,7 +315,7 @@ public class InteractableController : MonoBehaviour
     private void UpdateLevelManager(bool active) {
         int currentCount = levelManager.GetRequirementCount();
 
-        Debug.Log("Before Count Change: " + currentCount);
+        //Debug.Log("Before Count Change: " + currentCount);
         if(active) {
             levelManager.SetRequirementCount(++currentCount);
         }

@@ -8,6 +8,7 @@ TagManager:
   - Floor
   - Wall
   - NPC
+  - Boundary
   layers:
   - Default
   - TransparentFX
