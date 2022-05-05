@@ -30,77 +30,77 @@ public class CameraController : MonoBehaviour
     //                  COROUTINES
     //------------------------------------------------------
 
-    public IEnumerator ControlledSetup() {
-        // mainCamera = GetComponentInChildren<Camera>();
-        yield return new WaitUntil(() => GameManager.Instance != null);
-        gameManager = GameManager.Instance;
-        inputManager = gameManager.GetInputManager();
+    // public IEnumerator ControlledSetup() {
+    //     // mainCamera = GetComponentInChildren<Camera>();
+    //     yield return new WaitUntil(() => GameManager.Instance != null);
+    //     gameManager = GameManager.Instance;
+    //     inputManager = gameManager.GetInputManager();
         
-        inputManager.OnStartPrimaryTouch += PrimaryTouchStart;
-        inputManager.OnEndPrimaryTouch += PrimaryTouchEnd;
-        inputManager.OnStartSecondaryTouch += SecondaryTouchStart;
-        inputManager.OnEndSecondaryTouch += SecondaryTouchEnd;
-    }
+    //     inputManager.OnStartPrimaryTouch += PrimaryTouchStart;
+    //     inputManager.OnEndPrimaryTouch += PrimaryTouchEnd;
+    //     inputManager.OnStartSecondaryTouch += SecondaryTouchStart;
+    //     inputManager.OnEndSecondaryTouch += SecondaryTouchEnd;
+    // }
 
-    //------------------------------------------------------
-    //              STANDARD FUNCTIONS
-    //------------------------------------------------------
+    // //------------------------------------------------------
+    // //              STANDARD FUNCTIONS
+    // //------------------------------------------------------
 
-    private void Awake() {
-        StartCoroutine(ControlledSetup());
-    }
+    // private void Awake() {
+    //     StartCoroutine(ControlledSetup());
+    // }
 
-    private void OnEnable() {
+    // private void OnEnable() {
         
-    }
+    // }
 
-    private void Start() {
+    // private void Start() {
 
-    }
+    // }
 
-    private void OnDisable() {
-        inputManager.OnStartPrimaryTouch -= PrimaryTouchStart;
-        inputManager.OnEndPrimaryTouch -= PrimaryTouchEnd;
-        inputManager.OnStartSecondaryTouch -= SecondaryTouchStart;
-        inputManager.OnEndSecondaryTouch -= SecondaryTouchEnd;
-    }
+    // private void OnDisable() {
+    //     inputManager.OnStartPrimaryTouch -= PrimaryTouchStart;
+    //     inputManager.OnEndPrimaryTouch -= PrimaryTouchEnd;
+    //     inputManager.OnStartSecondaryTouch -= SecondaryTouchStart;
+    //     inputManager.OnEndSecondaryTouch -= SecondaryTouchEnd;
+    // }
 
-    private void PrimaryTouchStart(Vector2 position, float time) {
-        primaryStartPosition = position;
-        primaryStartTime = time;
-    }
+    // private void PrimaryTouchStart(Vector2 position, float time) {
+    //     primaryStartPosition = position;
+    //     primaryStartTime = time;
+    // }
 
-    private void PrimaryTouchEnd(Vector2 position, float time) {
-        primaryEndPosition = position;
-        primaryEndTime = time;
-    }
+    // private void PrimaryTouchEnd(Vector2 position, float time) {
+    //     primaryEndPosition = position;
+    //     primaryEndTime = time;
+    // }
 
-    private void SecondaryTouchStart(Vector2 position, float time) {
-        secondaryStartPosition = position;
-        secondaryStartTime = time;
-        DragBegin();
-    }
+    // private void SecondaryTouchStart(Vector2 position, float time) {
+    //     secondaryStartPosition = position;
+    //     secondaryStartTime = time;
+    //     DragBegin();
+    // }
 
-    private void SecondaryTouchEnd(Vector2 position, float time) {
-        secondaryEndPosition = position;
-        secondaryEndTime = time;
-        DragEnd();
-    }
+    // private void SecondaryTouchEnd(Vector2 position, float time) {
+    //     secondaryEndPosition = position;
+    //     secondaryEndTime = time;
+    //     DragEnd();
+    // }
 
-    private void DragBegin() {
+    // private void DragBegin() {
 
-    }
+    // }
 
-    private void DragEnd() {
-        Vector3 secondaryDragDistance = new Vector3(
-            transform.eulerAngles.x + (secondaryEndPosition.x - secondaryStartPosition.x),
-            transform.eulerAngles.y + (secondaryEndPosition.y - secondaryStartPosition.y),
-            transform.eulerAngles.z
-        );
+    // private void DragEnd() {
+    //     Vector3 secondaryDragDistance = new Vector3(
+    //         transform.eulerAngles.x + (secondaryEndPosition.x - secondaryStartPosition.x),
+    //         transform.eulerAngles.y + (secondaryEndPosition.y - secondaryStartPosition.y),
+    //         transform.eulerAngles.z
+    //     );
 
-        transform.rotation = Quaternion.Euler(secondaryDragDistance);
+    //     transform.rotation = Quaternion.Euler(secondaryDragDistance);
 
-    }
+    // }
 
     //------------------------------------------------------
     //              ROTATION FUNCTIONS
