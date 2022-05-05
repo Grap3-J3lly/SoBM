@@ -145,6 +145,186 @@ public partial class @InputControl : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""CameraControls"",
+            ""id"": ""44a0e657-524b-4be5-8885-7ce21ff3ea3d"",
+            ""actions"": [
+                {
+                    ""name"": ""Rotate"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""1298891f-a7f0-477d-8ecc-d2efd124c7d6"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Zoom"",
+                    ""type"": ""Value"",
+                    ""id"": ""5a812378-a53d-4e37-b365-bad1ee063d36"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""Keyboard"",
+                    ""id"": ""f0a0f8db-be79-474f-bf5d-f51849b381e9"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Negative"",
+                    ""id"": ""c89bc8da-27b6-4e80-87d2-72c052588dc4"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PrimaryControlScheme"",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Positive"",
+                    ""id"": ""03b72152-4cc3-4ab5-a607-f2361dad38a0"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PrimaryControlScheme"",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Keyboard"",
+                    ""id"": ""0d1553dc-f658-42e2-b332-762c452243a6"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Zoom"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""653ccf1f-dcc0-4b46-91a4-ac5b195489d0"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PrimaryControlScheme"",
+                    ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""b49fd802-7272-4e9f-8774-8a381a55d7ce"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PrimaryControlScheme"",
+                    ""action"": ""Zoom"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
+        },
+        {
+            ""name"": ""TouchControls"",
+            ""id"": ""8fae96cc-5829-4984-a6b0-a83383a56c35"",
+            ""actions"": [
+                {
+                    ""name"": ""PrimaryContact"",
+                    ""type"": ""Button"",
+                    ""id"": ""5867a9a3-c435-432c-804d-c42c5acb05d7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PrimaryPosition"",
+                    ""type"": ""Value"",
+                    ""id"": ""60c18b41-c30a-4017-8a72-21d7d5f9a6a5"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold"",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""SecondaryContact"",
+                    ""type"": ""Button"",
+                    ""id"": ""eb66e249-a80d-462a-807f-f652846ba354"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SecondaryPosition"",
+                    ""type"": ""Value"",
+                    ""id"": ""07f7be9b-3312-4830-ad60-825b8e6c45e0"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""01ac9637-bfaf-4505-af53-a38997e52146"",
+                    ""path"": ""<Touchscreen>/primaryTouch/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PrimaryControlScheme"",
+                    ""action"": ""PrimaryContact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""48a96d02-e478-472d-bbe8-cec1973d5646"",
+                    ""path"": ""<Touchscreen>/primaryTouch/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PrimaryControlScheme"",
+                    ""action"": ""PrimaryPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""77e4d838-7cc9-4393-9a3d-7736e95e987c"",
+                    ""path"": ""<Touchscreen>/touch1/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PrimaryControlScheme"",
+                    ""action"": ""SecondaryContact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""51f27128-20a0-459e-b968-106c66c98648"",
+                    ""path"": ""<Touchscreen>/touch1/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PrimaryControlScheme"",
+                    ""action"": ""SecondaryPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -181,6 +361,16 @@ public partial class @InputControl : IInputActionCollection2, IDisposable
         m_CharacterControls_Move = m_CharacterControls.FindAction("Move", throwIfNotFound: true);
         m_CharacterControls_Interact = m_CharacterControls.FindAction("Interact", throwIfNotFound: true);
         m_CharacterControls_Place = m_CharacterControls.FindAction("Place", throwIfNotFound: true);
+        // CameraControls
+        m_CameraControls = asset.FindActionMap("CameraControls", throwIfNotFound: true);
+        m_CameraControls_Rotate = m_CameraControls.FindAction("Rotate", throwIfNotFound: true);
+        m_CameraControls_Zoom = m_CameraControls.FindAction("Zoom", throwIfNotFound: true);
+        // TouchControls
+        m_TouchControls = asset.FindActionMap("TouchControls", throwIfNotFound: true);
+        m_TouchControls_PrimaryContact = m_TouchControls.FindAction("PrimaryContact", throwIfNotFound: true);
+        m_TouchControls_PrimaryPosition = m_TouchControls.FindAction("PrimaryPosition", throwIfNotFound: true);
+        m_TouchControls_SecondaryContact = m_TouchControls.FindAction("SecondaryContact", throwIfNotFound: true);
+        m_TouchControls_SecondaryPosition = m_TouchControls.FindAction("SecondaryPosition", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -285,6 +475,104 @@ public partial class @InputControl : IInputActionCollection2, IDisposable
         }
     }
     public CharacterControlsActions @CharacterControls => new CharacterControlsActions(this);
+
+    // CameraControls
+    private readonly InputActionMap m_CameraControls;
+    private ICameraControlsActions m_CameraControlsActionsCallbackInterface;
+    private readonly InputAction m_CameraControls_Rotate;
+    private readonly InputAction m_CameraControls_Zoom;
+    public struct CameraControlsActions
+    {
+        private @InputControl m_Wrapper;
+        public CameraControlsActions(@InputControl wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Rotate => m_Wrapper.m_CameraControls_Rotate;
+        public InputAction @Zoom => m_Wrapper.m_CameraControls_Zoom;
+        public InputActionMap Get() { return m_Wrapper.m_CameraControls; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(CameraControlsActions set) { return set.Get(); }
+        public void SetCallbacks(ICameraControlsActions instance)
+        {
+            if (m_Wrapper.m_CameraControlsActionsCallbackInterface != null)
+            {
+                @Rotate.started -= m_Wrapper.m_CameraControlsActionsCallbackInterface.OnRotate;
+                @Rotate.performed -= m_Wrapper.m_CameraControlsActionsCallbackInterface.OnRotate;
+                @Rotate.canceled -= m_Wrapper.m_CameraControlsActionsCallbackInterface.OnRotate;
+                @Zoom.started -= m_Wrapper.m_CameraControlsActionsCallbackInterface.OnZoom;
+                @Zoom.performed -= m_Wrapper.m_CameraControlsActionsCallbackInterface.OnZoom;
+                @Zoom.canceled -= m_Wrapper.m_CameraControlsActionsCallbackInterface.OnZoom;
+            }
+            m_Wrapper.m_CameraControlsActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @Rotate.started += instance.OnRotate;
+                @Rotate.performed += instance.OnRotate;
+                @Rotate.canceled += instance.OnRotate;
+                @Zoom.started += instance.OnZoom;
+                @Zoom.performed += instance.OnZoom;
+                @Zoom.canceled += instance.OnZoom;
+            }
+        }
+    }
+    public CameraControlsActions @CameraControls => new CameraControlsActions(this);
+
+    // TouchControls
+    private readonly InputActionMap m_TouchControls;
+    private ITouchControlsActions m_TouchControlsActionsCallbackInterface;
+    private readonly InputAction m_TouchControls_PrimaryContact;
+    private readonly InputAction m_TouchControls_PrimaryPosition;
+    private readonly InputAction m_TouchControls_SecondaryContact;
+    private readonly InputAction m_TouchControls_SecondaryPosition;
+    public struct TouchControlsActions
+    {
+        private @InputControl m_Wrapper;
+        public TouchControlsActions(@InputControl wrapper) { m_Wrapper = wrapper; }
+        public InputAction @PrimaryContact => m_Wrapper.m_TouchControls_PrimaryContact;
+        public InputAction @PrimaryPosition => m_Wrapper.m_TouchControls_PrimaryPosition;
+        public InputAction @SecondaryContact => m_Wrapper.m_TouchControls_SecondaryContact;
+        public InputAction @SecondaryPosition => m_Wrapper.m_TouchControls_SecondaryPosition;
+        public InputActionMap Get() { return m_Wrapper.m_TouchControls; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(TouchControlsActions set) { return set.Get(); }
+        public void SetCallbacks(ITouchControlsActions instance)
+        {
+            if (m_Wrapper.m_TouchControlsActionsCallbackInterface != null)
+            {
+                @PrimaryContact.started -= m_Wrapper.m_TouchControlsActionsCallbackInterface.OnPrimaryContact;
+                @PrimaryContact.performed -= m_Wrapper.m_TouchControlsActionsCallbackInterface.OnPrimaryContact;
+                @PrimaryContact.canceled -= m_Wrapper.m_TouchControlsActionsCallbackInterface.OnPrimaryContact;
+                @PrimaryPosition.started -= m_Wrapper.m_TouchControlsActionsCallbackInterface.OnPrimaryPosition;
+                @PrimaryPosition.performed -= m_Wrapper.m_TouchControlsActionsCallbackInterface.OnPrimaryPosition;
+                @PrimaryPosition.canceled -= m_Wrapper.m_TouchControlsActionsCallbackInterface.OnPrimaryPosition;
+                @SecondaryContact.started -= m_Wrapper.m_TouchControlsActionsCallbackInterface.OnSecondaryContact;
+                @SecondaryContact.performed -= m_Wrapper.m_TouchControlsActionsCallbackInterface.OnSecondaryContact;
+                @SecondaryContact.canceled -= m_Wrapper.m_TouchControlsActionsCallbackInterface.OnSecondaryContact;
+                @SecondaryPosition.started -= m_Wrapper.m_TouchControlsActionsCallbackInterface.OnSecondaryPosition;
+                @SecondaryPosition.performed -= m_Wrapper.m_TouchControlsActionsCallbackInterface.OnSecondaryPosition;
+                @SecondaryPosition.canceled -= m_Wrapper.m_TouchControlsActionsCallbackInterface.OnSecondaryPosition;
+            }
+            m_Wrapper.m_TouchControlsActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @PrimaryContact.started += instance.OnPrimaryContact;
+                @PrimaryContact.performed += instance.OnPrimaryContact;
+                @PrimaryContact.canceled += instance.OnPrimaryContact;
+                @PrimaryPosition.started += instance.OnPrimaryPosition;
+                @PrimaryPosition.performed += instance.OnPrimaryPosition;
+                @PrimaryPosition.canceled += instance.OnPrimaryPosition;
+                @SecondaryContact.started += instance.OnSecondaryContact;
+                @SecondaryContact.performed += instance.OnSecondaryContact;
+                @SecondaryContact.canceled += instance.OnSecondaryContact;
+                @SecondaryPosition.started += instance.OnSecondaryPosition;
+                @SecondaryPosition.performed += instance.OnSecondaryPosition;
+                @SecondaryPosition.canceled += instance.OnSecondaryPosition;
+            }
+        }
+    }
+    public TouchControlsActions @TouchControls => new TouchControlsActions(this);
     private int m_PrimaryControlSchemeSchemeIndex = -1;
     public InputControlScheme PrimaryControlSchemeScheme
     {
@@ -299,5 +587,17 @@ public partial class @InputControl : IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnPlace(InputAction.CallbackContext context);
+    }
+    public interface ICameraControlsActions
+    {
+        void OnRotate(InputAction.CallbackContext context);
+        void OnZoom(InputAction.CallbackContext context);
+    }
+    public interface ITouchControlsActions
+    {
+        void OnPrimaryContact(InputAction.CallbackContext context);
+        void OnPrimaryPosition(InputAction.CallbackContext context);
+        void OnSecondaryContact(InputAction.CallbackContext context);
+        void OnSecondaryPosition(InputAction.CallbackContext context);
     }
 }

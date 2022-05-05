@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[DefaultExecutionOrder(-1)]
 public class GameManager : MonoBehaviour
 {
     //------------------------------------------------------
@@ -11,6 +12,8 @@ public class GameManager : MonoBehaviour
 
     // General Focus
     public static GameManager Instance;
+
+    [SerializeField] InputManager inputManager;
 
     [SerializeField] private List<LevelManager> levels = new List<LevelManager>();
 
@@ -61,6 +64,9 @@ public class GameManager : MonoBehaviour
     //------------------------------------------------------
 
     // General Focus
+    public InputManager GetInputManager() {return inputManager;}
+    public void SetInputManager(InputManager newManager) {inputManager = newManager;}
+
     public List<LevelManager> GetLevels() {return levels;}
     public void SetLevels(List<LevelManager> newList) {levels = newList;}
 
@@ -116,7 +122,7 @@ public class GameManager : MonoBehaviour
     }
 
     //------------------------------------------------------
-    //                   RANDOMIZING FUNCTIONS
+    //              RANDOMIZING FUNCTIONS
     //------------------------------------------------------
 
     public int GenerateFromSeed(int seed, int minRange, int maxRange) {
@@ -346,6 +352,15 @@ public class GameManager : MonoBehaviour
         ChangeMenu(SearchMenus(MenuController.MenuType.GeneralHud));
         ToggleBackdrop(inMenu);
         ToggleCamera(inMenu);
+    }
+
+    //------------------------------------------------------
+    //                  UTILITY FUNCTIONS
+    //------------------------------------------------------    
+
+    public Vector3 ScreenToWorld(Camera camera, Vector3 position) {
+        position.z = camera.nearClipPlane;
+        return camera.ScreenToWorldPoint(position);
     }
 
 }

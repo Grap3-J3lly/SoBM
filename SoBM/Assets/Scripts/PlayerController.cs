@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.EnhancedTouch;
+//using UnityEngine.InputSystem.EnhancedTouch;
 
 public class PlayerController : MonoBehaviour
 {
@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
 
     // Player Related
 
+    [SerializeField] private InputManager inputManager;
     private InputControl inputControl;
     private CharacterController charController;
 
@@ -61,14 +62,10 @@ public class PlayerController : MonoBehaviour
         charController = GetComponent<CharacterController>();
         yield return new WaitUntil(() => GameManager.Instance != null);
         gameManager = GameManager.Instance;
-        
-        //yield return new WaitForEndOfFrame();
+
         HandleMovementSetup();
-        //yield return new WaitForEndOfFrame();
         HandleInteractionSetup();
-        //yield return new WaitForEndOfFrame();
         HandlePlacementSetup();
-        //yield return new WaitForEndOfFrame();
     }
 
     //------------------------------------------------------
@@ -95,7 +92,6 @@ public class PlayerController : MonoBehaviour
     private void Update() {
         HandleRotation();
         HandleMovement();
-
     }
 
     private void OnDisable() {
@@ -105,7 +101,7 @@ public class PlayerController : MonoBehaviour
         inputControl.CharacterControls.Place.Disable();
 
         //UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown -= OnInteract;
-        EnhancedTouchSupport.Disable();
+        //EnhancedTouchSupport.Disable();
     }
 
     //------------------------------------------------------
@@ -127,7 +123,7 @@ public class PlayerController : MonoBehaviour
         // inputControl.CharacterControls.Interact.canceled += OnInteract;
         inputControl.CharacterControls.Interact.performed += OnInteract;
 
-        EnhancedTouchSupport.Enable();
+        //EnhancedTouchSupport.Enable();
     }
 
     private void HandlePlacementSetup() {
