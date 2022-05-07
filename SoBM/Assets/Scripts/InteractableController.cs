@@ -142,10 +142,6 @@ public class InteractableController : MonoBehaviour
             ShiftButton(activeState);
         }
         if(interactType == InteractableType.Exit) {
-            if(levelManager == null) {
-                StartCoroutine(gameManager.Reset(gameManager.GetBaseResetTime()));
-                return;
-            }
                 if(levelManager.GetRequirementCount() > 0) {ToggleItem(true);}
                 else {ToggleItem(false);}
             

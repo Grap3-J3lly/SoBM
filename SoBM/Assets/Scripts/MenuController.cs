@@ -11,8 +11,7 @@ public class MenuController : MonoBehaviour
         Main,
         Credits,
         Options,
-        WinScreen,
-        LoseScreen,
+        LevelComplete,
         LevelSelect,
         GeneralHud,
         Pause,
@@ -39,18 +38,32 @@ public class MenuController : MonoBehaviour
 
     private void Awake() {
         gameManager = GameManager.Instance;
-        levelManager = gameManager.GetLevels()[gameManager.GetCurrentLevelNum()];
         player = gameManager.GetPlayerObject();
-        CreateMenuList();
+
     }
 
     private void Start() {
-        GetInfoSection();
+        //GetInfoSection();
+
     }
 
     //------------------------------------------------------
     //               GENERAL FUNCTIONS
     //------------------------------------------------------
+
+    public void LoadMenu(MenuType desiredMenu) {
+        if(this.menuType == MenuType.Backdrop && desiredMenu != MenuType.GeneralHud) {
+            gameObject.SetActive(true);
+            return;
+        }
+        
+        if(this.menuType == desiredMenu) {
+            gameObject.SetActive(true);
+        }
+        else {
+            gameObject.SetActive(false);
+        }
+    }
 
     public void ActivateMenu(MenuType showThisType) {
         if(this.menuType == showThisType) {
@@ -61,19 +74,6 @@ public class MenuController : MonoBehaviour
         if(this.menuType == hideThisType) {
             gameObject.SetActive(false) ;
         }
-    }
-
-    private void CreateMenuList() {
-        if(menuType != MenuType.Backdrop) {
-            gameManager.GetMenuList().Add(gameObject);
-        }
-        else {
-            ProvideBackdrop();
-        }
-    }
-
-    private void ProvideBackdrop() {
-        gameManager.SetBackdrop(gameObject);
     }
 
     private void GetInfoSection() {

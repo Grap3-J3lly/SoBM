@@ -34,10 +34,11 @@ public class GameManager : MonoBehaviour
     private Random.State currentState;
 
     // Menu Focus
+    [SerializeField] private List<GameObject> availableMenus = new List<GameObject>();
     private List<GameObject> menuList = new List<GameObject>();
     [SerializeField] private bool inMenu;
     [SerializeField] private MenuController.MenuType startUpMenuType;
-    [SerializeField] private GameObject backDrop;
+    [SerializeField] private GameObject menuSection;
     private GameObject previousMenu;
     private GameObject currentMenu;
     
@@ -54,10 +55,6 @@ public class GameManager : MonoBehaviour
         "L2",
         "L3"
     };
-
-    // Camera Focus
-    [SerializeField] private Camera backDropCamera;
-    [SerializeField] private Camera playerCam;
 
     //------------------------------------------------------
     //              GETTERS/SETTERS
@@ -94,23 +91,6 @@ public class GameManager : MonoBehaviour
     public List<GameObject> GetMenuList() {return menuList;}
     public void SetMenuList(List<GameObject> newList) {menuList = newList;}
 
-    // Scene Focus
-
-    public GameObject GetBackdrop() {return backDrop;}
-    public void SetBackdrop(GameObject newBackdrop) {backDrop = newBackdrop;}
-
-    //------------------------------------------------------
-    //                  COROUTINES
-    //------------------------------------------------------
-
-    public IEnumerator Reset(float resetTime) {
-        yield return new WaitForSeconds(resetTime);
-    }
-
-    public IEnumerator NextFrame() {
-        yield return new WaitForEndOfFrame();
-    }
-
     //------------------------------------------------------
     //              STANDARD FUNCTIONS
     //------------------------------------------------------
@@ -119,6 +99,25 @@ public class GameManager : MonoBehaviour
         Instance = this;
         Random.InitState(initialSeed);
         currentState = Random.state;
+    }
+
+    private void Start() {
+        HandleSetup();
+    }
+
+    //------------------------------------------------------
+    //              SETUP FUNCTIONS
+    //------------------------------------------------------
+
+    private void HandleSetup() {
+        HandleMenuSetup();
+    }
+
+    private  void HandleMenuSetup() {
+        LoadMenus();
+        CreateMenu(SearchMenus(MenuController.MenuType.Backdrop));
+        currentMenu = CreateMenu(SearchMenus(startUpMenuType));
+        
     }
 
     //------------------------------------------------------
@@ -147,20 +146,45 @@ public class GameManager : MonoBehaviour
     //                   MENU FUNCTIONS
     //------------------------------------------------------
 
-    private void HandleMenuSetup(MenuController.MenuType nextMenu) {
-        currentMenu = SearchMenus(nextMenu).gameObject;
+    private GameObject CreateMenu(GameObject newMenu) {
+        GameObject spawnedMenu = (GameObject)Instantiate(newMenu, menuSection.transform.position, Quaternion.identity);
+        spawnedMenu.transform.SetParent(menuSection.transform);
+        menuList.Add(spawnedMenu);
+        return spawnedMenu;
+    }
 
-        menuList.Remove(currentMenu);
-        foreach(GameObject menu in menuList) {
-            MenuController tempController = menu.GetComponent<MenuController>();
-            tempController.DeactivateMenu(tempController.GetMenuType());
-        }
-        menuList.Add(currentMenu);
+    private void LoadMenus() {
+
+        availableMenus = new List<GameObject>() {
+            // Credits Menu
+            Resources.Load<GameObject>("Prefabs/UI/Menus/Credits"),
+
+            // General HUD
+            Resources.Load<GameObject>("Prefabs/UI/Menus/GeneralHUD"),
+
+            // Level Complete
+            Resources.Load<GameObject>("Prefabs/UI/Menus/LevelComplete"),
+
+            // Level Select
+            Resources.Load<GameObject>("Prefabs/UI/Menus/LevelSelection"),
+
+            // Main Menu
+            Resources.Load<GameObject>("Prefabs/UI/Menus/MainMenu"),
+
+            // Backdrop
+            Resources.Load<GameObject>("Prefabs/UI/Menus/MenuBackdrop"),
+
+            // Options
+            Resources.Load<GameObject>("Prefabs/UI/Menus/Options"),
+
+            // Pause Menu
+            Resources.Load<GameObject>("Prefabs/UI/Menus/PauseMenu")
+        };
+
     }
 
     private GameObject SearchMenus(MenuController.MenuType theMenuType) {
-
-        return menuList.Find(specificMenu => specificMenu.GetComponent<MenuController>().GetMenuType() == theMenuType);
+        return availableMenus.Find(specificMenu => specificMenu.GetComponent<MenuController>().GetMenuType() == theMenuType);
     }
 
     private void ChangeMenu(GameObject thisMenu) {
@@ -168,15 +192,6 @@ public class GameManager : MonoBehaviour
         thisMenu.GetComponent<MenuController>().ActivateMenu(thisMenu.GetComponent<MenuController>().GetMenuType());
         previousMenu = currentMenu;
         currentMenu = thisMenu;
-    }
-
-    private void ToggleBackdrop(bool currentlyInMenu) {
-        if(currentlyInMenu) {
-            backDrop.GetComponent<MenuController>().ActivateMenu(backDrop.GetComponent<MenuController>().GetMenuType());
-        }
-        else {
-            backDrop.GetComponent<MenuController>().DeactivateMenu(backDrop.GetComponent<MenuController>().GetMenuType());
-        }
     }
 
     // Need to redesign this so it's based off method call to ButtonController for the specific button Types
@@ -271,8 +286,6 @@ public class GameManager : MonoBehaviour
     private void HandleResume() {
         inMenu = false;
         ChangeMenu(SearchMenus(MenuController.MenuType.GeneralHud)); 
-        ToggleBackdrop(inMenu);
-        ToggleCamera(inMenu);
         Time.timeScale = 1;
     }
 
@@ -280,8 +293,6 @@ public class GameManager : MonoBehaviour
     private void HandlePause() {
         inMenu = true;
         ChangeMenu(SearchMenus(MenuController.MenuType.Pause));
-        ToggleBackdrop(inMenu);
-        ToggleCamera(inMenu);
         Time.timeScale = 0;
     }
 
@@ -294,14 +305,9 @@ public class GameManager : MonoBehaviour
         
     public void HandleLevelCompletion() {
         if(currentSceneIndex == finalLevelIndex) {
-            //currentMusicSource.Pause();
             gameComplete = true;
         }
-        //StartCoroutine(HandleGameWinAudio());
         inMenu = true;
-        ChangeMenu(SearchMenus(MenuController.MenuType.WinScreen));
-        ToggleBackdrop(inMenu);
-        ToggleCamera(inMenu);
         
     }
 
@@ -312,11 +318,6 @@ public class GameManager : MonoBehaviour
         if(Time.timeScale == 0) {
             Time.timeScale = 1;
         }
-    }
-
-    private void ToggleCamera(bool currentlyInMenu) {
-        backDropCamera.gameObject.SetActive(currentlyInMenu);
-        playerCam.gameObject.SetActive(!currentlyInMenu);
     }
 
     private void HandleSpecificLevel(ButtonController button) {
@@ -338,8 +339,6 @@ public class GameManager : MonoBehaviour
         TogglePlayer(readyToSpawn);
         playerObject.transform.position = currentLevelSpawnpoint;
         ChangeMenu(SearchMenus(MenuController.MenuType.GeneralHud));
-        ToggleBackdrop(inMenu);
-        ToggleCamera(inMenu);
         sceneLoaded = true;
     }
 
@@ -350,8 +349,6 @@ public class GameManager : MonoBehaviour
         HandleResume();
         inMenu = false;
         ChangeMenu(SearchMenus(MenuController.MenuType.GeneralHud));
-        ToggleBackdrop(inMenu);
-        ToggleCamera(inMenu);
     }
 
     //------------------------------------------------------

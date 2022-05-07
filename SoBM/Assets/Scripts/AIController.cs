@@ -158,9 +158,7 @@ public class AIController : MonoBehaviour
 
     private void OnCollisionEnter(Collision info) {
         if(info.gameObject.tag == "Boundary") {
-            //Debug.Log("Colliding with wall");
             TurnAround();
-            gameManager.Reset(gameManager.GetBaseResetTime());            
         }
 
         if(currentTarget != null && info.gameObject == currentTarget) {

@@ -32,9 +32,7 @@ public class LevelManager : MonoBehaviour
     //------------------------------------------------------
 
     private void Awake() {
-        //Instance = this;
         gameManager = GameManager.Instance;
-        StartCoroutine(gameManager.Reset(gameManager.GetBaseResetTime()));
         gameManager.GetLevels().Add(this);
         HandleLevelSetup();
     }
