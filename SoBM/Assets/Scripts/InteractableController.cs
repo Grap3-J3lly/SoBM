@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[DefaultExecutionOrder(2)]
 public class InteractableController : MonoBehaviour
 {
     //------------------------------------------------------
@@ -118,7 +119,7 @@ public class InteractableController : MonoBehaviour
     }
 
     private void Start() {
-        levelManager = gameManager.GetLevels()[gameManager.GetCurrentLevelNum()];
+        levelManager = gameManager.GetLevels()[0];
         playerObject = gameManager.GetPlayerObject();
 
         if(interactType == InteractableType.Switch) {
@@ -185,7 +186,6 @@ public class InteractableController : MonoBehaviour
     //------------------------------------------------------
 
     private void CheckTriggerOrigin(GameObject origin) {
-        
         if(origin.tag == "Player") {
             origin.GetComponentInParent<PlayerController>().HandleInteraction(gameObject, triggered);
         }
@@ -302,6 +302,8 @@ public class InteractableController : MonoBehaviour
     public void CheckExit(bool unlocked) {
         if(unlocked) {
             Debug.Log("Door is unlocked, level complete");
+            levelManager.SetLevelComplete(true);
+            levelManager.HandleLevelComplete();
         }
         else {
             Debug.Log("Door is locked. Requirements remaining: " + levelManager.GetRequirementCount());

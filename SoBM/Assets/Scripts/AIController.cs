@@ -185,7 +185,7 @@ public class AIController : MonoBehaviour
     private void HandleInitialSetup() {
         Debug.Log("InitialSetup");
         gameManager = GameManager.Instance;
-        levelManager = gameManager.GetLevels()[gameManager.GetCurrentLevelNum()];
+        levelManager = gameManager.GetLevels()[0];
         levelRequirements = levelManager.GetLevelRequirementList();
         StartCoroutine(StorePlayerObject());
         HandleBehaviorSetup();

@@ -10,6 +10,7 @@ public class InventoryManager : MonoBehaviour
     //------------------------------------------------------
 
     private GameManager gameManager;
+    private MenuController hudController;
 
     private GameObject itemButton;
     [SerializeField] private GameObject itemUIParent;
@@ -29,6 +30,9 @@ public class InventoryManager : MonoBehaviour
     public List<GameObject> GetInventory() {return inventory;}
     public void SetInventory(List<GameObject> newList) {inventory = newList;}
 
+    public List<GameObject> GetInventoryButtons() {return inventoryButtons;}
+    public void SetInventoryButtons(List<GameObject> newButtonList) {inventoryButtons = newButtonList;}
+
     //------------------------------------------------------
     //                  STANDARD FUNCTIONS
     //------------------------------------------------------
@@ -43,7 +47,13 @@ public class InventoryManager : MonoBehaviour
     //------------------------------------------------------
 
     private void LoadObjectButton() {
-        itemButton = Resources.Load<GameObject>("Prefabs/UI/ItemButton");
+        itemButton = Resources.Load<GameObject>("Prefabs/UI/Buttons/ItemButton");
+    }
+
+    public void LocateButtonLocation() {
+        hudController = gameManager.GetCurrentMenu().GetComponent<MenuController>();
+        ButtonController tempButton = gameManager.GetCurrentMenu().GetComponentInChildren<ButtonController>();
+        itemUIParent = tempButton.transform.parent.gameObject;
     }
 
     //------------------------------------------------------
@@ -55,9 +65,12 @@ public class InventoryManager : MonoBehaviour
 
         RectTransform tempTransform = itemUIParent.GetComponent<RectTransform>();
 
-        GameObject newButtonObject = (GameObject)Instantiate(itemButton, tempTransform.position, tempTransform.rotation);
+        GameObject newButtonObject = (GameObject)Instantiate(itemButton, tempTransform, false);
         newButtonObject.transform.SetParent(itemUIParent.transform);
         newButtonObject.name = buttonLabel + "UIButton";
+        newButtonObject.GetComponent<RectTransform>().anchorMax = hudController.GetAnchorMaxOffset();
+        newButtonObject.GetComponent<RectTransform>().anchorMin = hudController.GetAnchorMinOffset();
+        newButtonObject.GetComponent<RectTransform>().anchoredPosition = hudController.GetPositionMinOffset();
 
         InventoryButton newButtonController = newButtonObject.GetComponent<InventoryButton>();
         newButtonController.SetName(buttonLabel);

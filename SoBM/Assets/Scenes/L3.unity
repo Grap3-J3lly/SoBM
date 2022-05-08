@@ -748,7 +748,9 @@ MonoBehaviour:
   levelRequirements:
   - {fileID: 2113335293}
   - {fileID: 2037945476}
+  levelNumber: 3
   exitDoor: {fileID: 2067551818}
+  startLocation: {x: 0, y: 0, z: 0}
 --- !u!4 &1281281580
 Transform:
   m_ObjectHideFlags: 0

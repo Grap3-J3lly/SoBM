@@ -217,36 +217,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamObject: {fileID: 426473808}
---- !u!1 &356748240
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 356748241}
-  m_Layer: 0
-  m_Name: MovementLocation
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &356748241
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 356748240}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1487036374}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &408860408
 GameObject:
   m_ObjectHideFlags: 0
@@ -819,7 +789,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 0
-    m_SensorSize: {x: 0.56278026, y: 1}
+    m_SensorSize: {x: 0.55964327, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -896,7 +866,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 0
-    m_SensorSize: {x: 0.56278026, y: 1}
+    m_SensorSize: {x: 0.55964327, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -959,16 +929,16 @@ MonoBehaviour:
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 0}
   m_ActionsAsset: {fileID: -944628639613478452, guid: 375eb683b013fac48b951bfcb2a1baf4, type: 3}
-  m_PointAction: {fileID: 0}
+  m_PointAction: {fileID: 4358370215168797701, guid: 375eb683b013fac48b951bfcb2a1baf4, type: 3}
   m_MoveAction: {fileID: -8628393754550764866, guid: 375eb683b013fac48b951bfcb2a1baf4, type: 3}
-  m_SubmitAction: {fileID: 0}
-  m_CancelAction: {fileID: 0}
-  m_LeftClickAction: {fileID: 0}
-  m_MiddleClickAction: {fileID: 0}
-  m_RightClickAction: {fileID: 0}
-  m_ScrollWheelAction: {fileID: 0}
-  m_TrackedDevicePositionAction: {fileID: 0}
-  m_TrackedDeviceOrientationAction: {fileID: 0}
+  m_SubmitAction: {fileID: 5579042133786202906, guid: 375eb683b013fac48b951bfcb2a1baf4, type: 3}
+  m_CancelAction: {fileID: 4708186650447897578, guid: 375eb683b013fac48b951bfcb2a1baf4, type: 3}
+  m_LeftClickAction: {fileID: 8809792318651946941, guid: 375eb683b013fac48b951bfcb2a1baf4, type: 3}
+  m_MiddleClickAction: {fileID: -7013878156020698253, guid: 375eb683b013fac48b951bfcb2a1baf4, type: 3}
+  m_RightClickAction: {fileID: 8715094378749733361, guid: 375eb683b013fac48b951bfcb2a1baf4, type: 3}
+  m_ScrollWheelAction: {fileID: -5346312694779295277, guid: 375eb683b013fac48b951bfcb2a1baf4, type: 3}
+  m_TrackedDevicePositionAction: {fileID: 843956558495916762, guid: 375eb683b013fac48b951bfcb2a1baf4, type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 1414563473283007116, guid: 375eb683b013fac48b951bfcb2a1baf4, type: 3}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
 --- !u!114 &1291866502
@@ -1029,7 +999,6 @@ Transform:
   m_Children:
   - {fileID: 1161426063}
   - {fileID: 221032131}
-  - {fileID: 356748241}
   m_Father: {fileID: 2014108119}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1285,7 +1254,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 0
-    m_SensorSize: {x: 0.56278026, y: 1}
+    m_SensorSize: {x: 0.55964327, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1670,12 +1639,13 @@ MonoBehaviour:
   levels: []
   currentLevelSpawnpoint: {x: 0, y: 0, z: 0}
   baseResetTime: 2.5
-  currentLevelNum: 0
+  currentLevelNum: 1
   playerObject: {fileID: 433538220}
+  cameraControlArea: {fileID: 221032130}
   initialSeed: 20
   initialLowRange: 1
   initialHighRange: 999
-  availableMenus: []
+  possibleMenus: []
   inMenu: 0
   startUpMenuType: 0
   menuSection: {fileID: 408860408}
@@ -1733,7 +1703,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 0
-    m_SensorSize: {x: 0.56278026, y: 1}
+    m_SensorSize: {x: 0.55964327, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1835,11 +1805,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1428069436267717683, guid: a40264c31509b3045a0a28baf437e55e, type: 3}
       propertyPath: m_Size.z
-      value: 0.1
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 1428069436267717683, guid: a40264c31509b3045a0a28baf437e55e, type: 3}
       propertyPath: m_Center.z
-      value: 0.75
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 6827007076437454131, guid: a40264c31509b3045a0a28baf437e55e, type: 3}
       propertyPath: itemUIParent
@@ -1892,6 +1862,10 @@ PrefabInstance:
     - target: {fileID: 8602824017358934027, guid: a40264c31509b3045a0a28baf437e55e, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 8602824017358934027, guid: a40264c31509b3045a0a28baf437e55e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8602824017358934027, guid: a40264c31509b3045a0a28baf437e55e, type: 3}
       propertyPath: m_TagString
