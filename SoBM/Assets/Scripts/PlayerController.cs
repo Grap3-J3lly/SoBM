@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
 
     // Player Related
 
-    [SerializeField] private InputManager inputManager;
+    //[SerializeField] private InputManager inputManager;
     private InputControl inputControl;
     private CharacterController charController;
 
@@ -205,9 +205,10 @@ public class PlayerController : MonoBehaviour
             zoneEntered = true;
             objectInZone = interactionOrigin;
 
-            if(tempController.GetInteractType() == InteractableController.InteractableType.Button) {
-                tempController.HandleInteraction(inventoryManager);
-            }
+            // if(tempController.GetInteractType() == InteractableController.InteractableType.Button) {
+            //     tempController.HandleInteraction(inventoryManager);
+            // }
+            tempController.HandleInteraction(inventoryManager);
         }
         else {
             zoneEntered = false;
@@ -224,6 +225,10 @@ public class PlayerController : MonoBehaviour
             Vector3 placement = HandlePlacementLocation();
             GameObject selectedObject = inventoryManager.GetSelectedObject();
             PlaceItemInWorld(selectedObject, placement);
+            inventoryManager.SetSelectedObject(null);
+            Destroy(inventoryManager.GetInventoryButtons()[0]);
+            inventoryManager.GetInventory().RemoveAt(0);
+            inventoryManager.GetInventoryButtons().RemoveAt(0);
         }
     }
 
@@ -235,10 +240,11 @@ public class PlayerController : MonoBehaviour
 
     private void PlaceItemInWorld(GameObject selectedObject, Vector3 placement) {
         selectedObject.SetActive(true);
-        LevelManager currentLevelManager = gameManager.GetLevels()[gameManager.GetCurrentLevelNum()];
+        LevelManager currentLevelManager = gameManager.GetLevels()[0];
         
         selectedObject.transform.SetParent(currentLevelManager.transform);
         selectedObject.transform.position = placement;
+        
     }
 
     //------------------------------------------------------
