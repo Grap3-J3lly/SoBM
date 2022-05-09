@@ -20,7 +20,7 @@ public class AIController : MonoBehaviour
     private bool nearTarget = false;
     [SerializeField] private bool maintainInventory = false;
 
-    [SerializeField] private float delay = 1f;
+    [SerializeField] private float delay = 3f;
 
     // Movement Focus
 
@@ -128,6 +128,12 @@ public class AIController : MonoBehaviour
         Debug.Log("Grabbing Player Object: " + playerObject);
     }
 
+    private IEnumerator ResetCollider() {
+        gameObject.GetComponent<CapsuleCollider>().enabled = false;
+        yield return new WaitForSeconds(delay);
+        gameObject.GetComponent<CapsuleCollider>().enabled = true;
+    }
+
     //------------------------------------------------------
     //                  STANDARD FUNCTIONS
     //------------------------------------------------------
@@ -163,18 +169,22 @@ public class AIController : MonoBehaviour
 
         if(currentTarget != null && info.gameObject == currentTarget) {
             nearTarget = true;
+            CheckInventory();
             isWalking = false;
         }
 
         if(info.gameObject.tag == "Wall") {
-            info.gameObject.GetComponent<BoxCollider>().enabled = false;
+            //info.gameObject.GetComponent<BoxCollider>().enabled = false;
+            StartCoroutine(ResetCollider());
+            
         }
     }
 
     private void OnCollisionExit(Collision info) {
         if(info.gameObject.tag == "Wall" && info.gameObject.GetComponent<BoxCollider>().enabled == false) 
         {
-            info.gameObject.GetComponent<BoxCollider>().enabled = true;
+            
+            //info.gameObject.GetComponent<BoxCollider>().enabled = true;
         }
     }
 
@@ -253,23 +263,6 @@ public class AIController : MonoBehaviour
         }
     }
 
-    public void HandleInteraction(GameObject interactionOrigin, bool triggered) {
-        InteractableController tempController = interactionOrigin.GetComponent<InteractableController>();
-        if(!maintainInventory && tempController.GetInteractType() == InteractableController.InteractableType.Block) {
-            return;
-        }
-        // Ignore other interactables
-        if((currentTarget != null && currentTarget != interactionOrigin) || currentTarget == null && behavior != Behaviors.Pursue) {
-            return;
-        }
-        if(triggered) {
-            tempController.HandleInteraction(inventoryManager);
-        }
-        else {
-
-        }
-    }
-
     //------------------------------------------------------
     //                  REACT FUNCTIONS
     //------------------------------------------------------
@@ -311,6 +304,19 @@ public class AIController : MonoBehaviour
 
     private void CheckInventory() {
         List<GameObject> currentInventory = inventoryManager.GetInventory();
+        if(currentInventory.Count != 0 && nearTarget) {
+            Vector3 placementPosition = new Vector3(
+                currentTarget.transform.position.x,
+                currentTarget.transform.position.y,
+                currentTarget.transform.position.z
+            );
+            StartCoroutine(ResetCollider());
+            PlaceItemInWorld(selectedItem, placementPosition);
+            transform.position += (delay * Vector3.back);
+            inventoryManager.SetSelectedObject(null);
+            currentInventory.RemoveAt(0);
+            return;
+        }
 
         if(currentInventory.Count != 0) {
             foreach(GameObject item in currentInventory) {
@@ -324,12 +330,35 @@ public class AIController : MonoBehaviour
         }
     }
 
+    private void PlaceItemInWorld(GameObject selectedObject, Vector3 placement) {
+        LevelManager currentLevelManager = gameManager.GetLevels()[0];
+        
+        selectedObject.transform.SetParent(currentLevelManager.transform);
+        selectedObject.transform.position = placement;
+        selectedObject.SetActive(true);
+    }
+
+    public void HandleInteraction(GameObject interactionOrigin, bool triggered) {
+        InteractableController tempController = interactionOrigin.GetComponent<InteractableController>();
+        if(!maintainInventory && tempController.GetInteractType() == InteractableController.InteractableType.Block) {
+            return;
+        }
+        // Ignore other interactables
+        if((currentTarget != null && currentTarget != interactionOrigin) || (currentTarget == null && behavior != Behaviors.Interact)) {
+            return;
+        }
+        if(triggered) {
+            tempController.HandleInteraction(inventoryManager);
+        }
+        else {
+        }
+    }
+
     //------------------------------------------------------
     //                  PURSUE FUNCTIONS
     //------------------------------------------------------
 
     private void DetermineTargetPursuit() {
-        Debug.Log("Determined Pursuit Behavior, targetting Player");
         currentTarget = playerObject;
     }
 

@@ -244,7 +244,6 @@ public class PlayerController : MonoBehaviour
         
         selectedObject.transform.SetParent(currentLevelManager.transform);
         selectedObject.transform.position = placement;
-        
     }
 
     //------------------------------------------------------

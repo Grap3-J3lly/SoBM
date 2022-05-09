@@ -53,7 +53,7 @@ public class ButtonController : MonoBehaviour
     }
 
     private void Start() {
-
+        
     }
 
     private void Update() {
@@ -166,7 +166,9 @@ public class ButtonController : MonoBehaviour
 
     private void HandleMainMenu() {
         if(gameManager.GetCurrentMenu().GetComponent<MenuController>().GetMenuType() == MenuController.MenuType.Pause) {
-            Debug.Log("Trying to unload scene: " + defaultSceneName + levelNum);
+            //Debug.Log("Trying to grab Level Manager: " + currentLevelManager);
+            LevelManager tempManager = gameManager.GetLevels()[gameManager.GetCurrentLevelNum()-1];
+            tempManager.GetEnemy().SetActive(false);
             StartCoroutine(gameManager.UnloadScene(defaultSceneName + levelNum));
         }
         gameManager.ChangeMenu(MenuController.MenuType.Main);
@@ -181,6 +183,8 @@ public class ButtonController : MonoBehaviour
 
     private void HandleNextLevel() {
         Time.timeScale = 1;
+        LevelManager tempManager = gameManager.GetLevels()[gameManager.GetCurrentLevelNum()-1];
+            tempManager.GetEnemy().SetActive(false);
         gameManager.SetPreviousLevelNum(gameManager.GetCurrentLevelNum());
         gameManager.SetCurrentLevelNum(gameManager.GetCurrentLevelNum() + 1);
         StartCoroutine(gameManager.LoadScene(defaultSceneName + (gameManager.GetCurrentLevelNum()), defaultSceneName + (gameManager.GetPreviousLevelNum())));

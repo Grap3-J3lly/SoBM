@@ -20,7 +20,12 @@ public class LevelManager : MonoBehaviour
 
     [SerializeField] private GameObject exitDoor;
 
+    [SerializeField] private Vector3 cameraControlLocation;
+
     [SerializeField] private Vector3 startLocation;
+
+    [SerializeField] private GameObject enemyNPC;
+    [SerializeField] private Vector3 enemySpawnLocation;
 
     //------------------------------------------------------
     //                  GETTERS/SETTERS
@@ -37,6 +42,12 @@ public class LevelManager : MonoBehaviour
 
     public bool GetLevelComplete() {return levelComplete;}
     public void SetLevelComplete(bool newValue) {levelComplete = newValue;}
+
+    public GameObject GetEnemy() {return enemyNPC;}
+    public void SetEnemy(GameObject newEnemy) {enemyNPC = newEnemy;}
+
+    public Vector3 GetEnemySpawnLocation() {return enemySpawnLocation;}
+    public void SetEnemySpawnLocation(Vector3 newLoc) {enemySpawnLocation = newLoc;}
 
     //------------------------------------------------------
     //                  STANDARD FUNCTIONS
@@ -55,13 +66,14 @@ public class LevelManager : MonoBehaviour
         HandleGameManagerSetup();
         HandleLevelSetup();
         UpdateMenu(true, MenuController.MenuType.GeneralHud);
-        HandlePlayerSetup();
+        HandleCharacterSetup();
     }
 
     private void HandleGameManagerSetup() {
         gameManager = GameManager.Instance;
         gameManager.GetLevels().Add(this);
         gameManager.SetCurrentLevelNum(levelNumber);
+        //gameManager.GetCameraControlArea().transform.position = cameraControlLocation;
     }
 
     private void HandleLevelSetup() {
@@ -72,9 +84,13 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    private void HandlePlayerSetup() {
+    private void HandleCharacterSetup() {
         gameManager.GetPlayerObject().transform.position = startLocation;
         gameManager.GetPlayerObject().GetComponentInChildren<InventoryManager>().LocateButtonLocation();
+
+        enemyNPC = gameManager.GetEnemies()[levelNumber - 1];
+        enemyNPC.SetActive(true);
+        enemyNPC.transform.position = enemySpawnLocation;
     }
 
     //------------------------------------------------------

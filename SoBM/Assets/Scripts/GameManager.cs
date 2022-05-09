@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private Vector3 currentLevelSpawnpoint;
 
+    [SerializeField] private List<GameObject> enemies = new List<GameObject>();
+
     [SerializeField] private float baseResetTime = 2.5f;
     [SerializeField] private int currentLevelNum = 0;
     private int previousLevelNum = 0;
@@ -68,8 +70,13 @@ public class GameManager : MonoBehaviour
     public InputManager GetInputManager() {return inputManager;}
     public void SetInputManager(InputManager newManager) {inputManager = newManager;}
 
-    public List<LevelManager> GetLevels() {return levels;}
+    public List<LevelManager> GetLevels() {
+        Debug.Log("Levels Size: " + levels.Count);
+        return levels;}
     public void SetLevels(List<LevelManager> newList) {levels = newList;}
+
+    public List<GameObject> GetEnemies() {return enemies;}
+    public void SetEnemies(List<GameObject> newEnemyList) {enemies = newEnemyList;}
 
     public float GetBaseResetTime() {return baseResetTime;}
     public void SetBaseResetTime(float newResetTime) {baseResetTime = newResetTime;}
@@ -82,6 +89,9 @@ public class GameManager : MonoBehaviour
 
     public GameObject GetPlayerObject() {return playerObject;}
     public void SetPlayerObject(GameObject newPlayer) {playerObject = newPlayer;}
+
+    public GameObject GetCameraControlArea() {return cameraControlArea;}
+    public void SetCameraControlArea(GameObject newArea) {cameraControlArea = newArea;}
 
     // Random Gen Focus
     public int GetInitialSeed() {return initialSeed;}
@@ -250,51 +260,6 @@ public class GameManager : MonoBehaviour
         currentMenu.SetActive(true);
     }
 
-    // Need to redesign this so it's based off method call to ButtonController for the specific button Types
-    // In button controller - HandleButtonPress, then depending on type, call specific functions
-    // public void ChangeMenuByButton(ButtonController buttonPressed) {
-    //     switch(buttonPressed.GetButtonType()) {
-    //         // "Play" goes to Level Select. Specific level is chosen by SpecificLevelStart
-    //         case ButtonController.ButtonType.Play :
-    //             ChangeMenu(SearchMenus(MenuController.MenuType.LevelSelect));
-    //         break;
-    //         // Options
-    //         case ButtonController.ButtonType.Options : 
-    //             ChangeMenu(SearchMenus(MenuController.MenuType.Options));
-    //             break;
-    //         // Credits
-    //         case ButtonController.ButtonType.Credits :
-    //             ChangeMenu(SearchMenus(MenuController.MenuType.Credits));
-    //             break;
-    //         // Back (PreviousMenu)
-    //         case ButtonController.ButtonType.Back : 
-    //             HandleBackButton();
-    //             break;
-    //         // Start Specific Level / Next Level
-    //         case ButtonController.ButtonType.SpecificLevelStart :
-    //             HandleSpecificLevel(buttonPressed);
-    //             break;
-    //         case ButtonController.ButtonType.NextLevel :
-    //             HandleNextLevel();
-    //             break;
-    //         // Main Menu
-    //         case ButtonController.ButtonType.MainMenu : 
-    //             HandleMainMenuChange();
-    //             break;
-    //         // Pause Menu
-    //         case ButtonController.ButtonType.Pause : 
-    //             HandlePause();
-    //             break;
-    //         // Restart Level
-    //         case ButtonController.ButtonType.Restart :
-    //             RestartGame();
-    //             break;
-    //         case ButtonController.ButtonType.Resume : 
-    //             HandleResume();
-    //             break;
-    //     }
-    // }
-
     //------------------------------------------------------
     //                  SCENE FUNCTIONS
     //------------------------------------------------------
@@ -320,23 +285,7 @@ public class GameManager : MonoBehaviour
             nextScene = currentAreaInitialSceneIndex;
         }
         return nextScene;
-    }
-
-    // private void ChangeScene(int nextScene) {
-    //     if(!sceneLoaded) {
-
-    //         nextScene = ResetSceneToStartScene(nextScene);
-
-    //         if(currentSceneIndex != gameplaySceneIndex) {
-    //             //UnloadScene(scenes[currentSceneIndex]);
-    //         }
-    //         LoadScene(scenes[nextScene]);
-    //         currentSceneIndex = nextScene;
-    //         //SceneManager.sceneLoaded += LevelStartSetup;
-    //     }  
-    // }
-
-    
+    } 
 
     //------------------------------------------------------
     //                  GAME FUNCTIONS
@@ -353,82 +302,6 @@ public class GameManager : MonoBehaviour
         backDropMenu.SetActive(true);
         inMenu = true;
     }
-
-    // private void HandleMainMenuChange() {
-    //     ChangeMenu(SearchMenus(MenuController.MenuType.Main));
-    //     if(SceneManager.sceneCount > 1) {
-    //         UnloadScene(scenes[currentSceneIndex]);
-    //         currentSceneIndex = 0;
-    //     }
-    // }
-
-    // private void HandleResume() {
-    //     inMenu = false;
-    //     ChangeMenu(SearchMenus(MenuController.MenuType.GeneralHud)); 
-    //     Time.timeScale = 1;
-    // }
-
-    // Documented reference for better way to pause game, need to implement
-    // private void HandlePause() {
-    //     inMenu = true;
-    //     ChangeMenu(SearchMenus(MenuController.MenuType.Pause));
-    //     Time.timeScale = 0;
-    // }
-
-    // private void HandleBackButton() {
-    //     if(previousMenu.GetComponent<MenuController>().GetMenuType() == MenuController.MenuType.GeneralHud) {
-    //         HandleResume();
-    //     }
-    //     ChangeMenu(previousMenu);
-    // }
-        
-    // public void HandleLevelCompletion() {
-    //     if(currentSceneIndex == finalLevelIndex) {
-    //         gameComplete = true;
-    //     }
-    //     inMenu = true;
-        
-    // }
-
-    // private void StartLevel(int nextLevelIndex) {
-    //     sceneLoaded = false;
-    //     ChangeScene(nextLevelIndex);
-    //     inMenu = false;
-    //     if(Time.timeScale == 0) {
-    //         Time.timeScale = 1;
-    //     }
-    // }
-
-    // private void HandleSpecificLevel(ButtonController button) {
-    //     int nextLevelIndex = button.GetToLevelNumber();
-    //     StartLevel(nextLevelIndex);
-    // }
-
-    // private void HandleNextLevel() {
-    //     int nextLevelIndex = currentSceneIndex + 1;
-    //     StartLevel(nextLevelIndex);
-    // }
-
-    // private void TogglePlayer(bool status) {
-    //     playerObject.gameObject.SetActive(status);
-    // }
-
-    // private void LevelStartSetup(Scene scene, LoadSceneMode mode) {
-    //     readyToSpawn = true;
-    //     TogglePlayer(readyToSpawn);
-    //     playerObject.transform.position = currentLevelSpawnpoint;
-    //     ChangeMenu(SearchMenus(MenuController.MenuType.GeneralHud));
-    //     sceneLoaded = true;
-    // }
-
-    // public void RestartGame() {
-    //     sceneLoaded = false;
-    //     gameComplete = false;
-    //     ChangeScene(currentAreaInitialSceneIndex);
-    //     HandleResume();
-    //     inMenu = false;
-    //     ChangeMenu(SearchMenus(MenuController.MenuType.GeneralHud));
-    // }
 
     //------------------------------------------------------
     //                  UTILITY FUNCTIONS
