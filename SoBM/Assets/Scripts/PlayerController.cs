@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Camera camera;
     [SerializeField] private InventoryManager inventoryManager;
     [SerializeField] private GameObject interactionZone;
+    private Transform cameraMain;
 
     public event Action onActivationEvent;
 
@@ -64,10 +65,10 @@ public class PlayerController : MonoBehaviour
     //------------------------------------------------------
 
     public IEnumerator ControlledSetup() {
-        inputControl = new InputControl();
         charController = GetComponent<CharacterController>();
         yield return new WaitUntil(() => GameManager.Instance != null);
         gameManager = GameManager.Instance;
+        inputControl = gameManager.GetInputControl();
 
         HandleMovementSetup();
         HandleInteractionSetup();
@@ -85,13 +86,12 @@ public class PlayerController : MonoBehaviour
 
     private void OnEnable() {
         
-        inputControl.CharacterControls.Move.Enable();
-        inputControl.CharacterControls.Interact.Enable();
-        inputControl.CharacterControls.Place.Enable();
+        //inputControl.Enable();
 
-        inputControl.TouchControls.PrimaryContact.Enable();
+        // inputControl.CharacterControls.Move.Enable();
+        // inputControl.CharacterControls.Interact.Enable();
+        // inputControl.CharacterControls.Place.Enable();
 
-        //UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown += OnInteract;
     }
 
     private void Start() {
@@ -106,14 +106,12 @@ public class PlayerController : MonoBehaviour
 
     private void OnDisable() {
 
-        inputControl.CharacterControls.Move.Disable();
-        inputControl.CharacterControls.Interact.Disable();
-        inputControl.CharacterControls.Place.Disable();
+        //inputControl.Disable();
 
-        inputControl.TouchControls.PrimaryContact.Disable();
+        // inputControl.CharacterControls.Move.Disable();
+        // inputControl.CharacterControls.Interact.Disable();
+        // inputControl.CharacterControls.Place.Disable();
 
-        //UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown -= OnInteract;
-        //EnhancedTouchSupport.Disable();
     }
 
     //------------------------------------------------------
@@ -122,6 +120,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleAllSetup() {
         StartCoroutine(ControlledSetup());
+        cameraMain = Camera.main.transform;
     }
 
     private void HandleMovementSetup() {
@@ -131,21 +130,12 @@ public class PlayerController : MonoBehaviour
     }
 
     private void HandleInteractionSetup() {
-        // inputControl.CharacterControls.Interact.started += OnInteract;
-        // inputControl.CharacterControls.Interact.canceled += OnInteract;
-        
         inputControl.CharacterControls.Interact.performed += OnInteract;
 
-        
-        
-
-        //EnhancedTouchSupport.Enable();
     }
 
     private void HandlePlacementSetup() {
-        //inputControl.CharacterControls.Place.performed += OnPlacement;
-
-        
+ 
     }
 
     public void HandleAnimationSetup() {
@@ -176,8 +166,8 @@ public class PlayerController : MonoBehaviour
     private void OnMove(InputAction.CallbackContext context)
     {
         horizontalInput = context.ReadValue<Vector2>();
-        horizontalForce.x = horizontalInput.x;
-        horizontalForce.z = horizontalInput.y;
+        horizontalForce = (cameraMain.forward * horizontalInput.y + cameraMain.right * horizontalInput.x);
+
         isMovePressed = horizontalInput.x != 0 || horizontalInput.y != 0;
     }
 
@@ -211,7 +201,6 @@ public class PlayerController : MonoBehaviour
     private void OnInteract(InputAction.CallbackContext context) {
 
         if(zoneEntered) {
-            Debug.Log("Interaction ocurring with object in zone");
             if(objectInZone != null && objectInZone.tag == "Interactable") {
                 objectInZone.GetComponent<InteractableController>().HandleInteraction(inventoryManager);
             }
@@ -225,9 +214,6 @@ public class PlayerController : MonoBehaviour
             zoneEntered = true;
             objectInZone = interactionOrigin;
 
-            // if(tempController.GetInteractType() == InteractableController.InteractableType.Button) {
-            //     tempController.HandleInteraction(inventoryManager);
-            // }
             tempController.HandleInteraction(inventoryManager);
         }
         else {
@@ -281,23 +267,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // private void DetermineInteractionType() {
-    //     if(!inventoryManager.GetSelectedObject()) {
-    //         useOnPlacement = false;
-    //     }
-    //     else {
-    //         useOnPlacement = true;
-    //     }
-    // }
-
     public void CheckInteractOrPlacement() {
         if(useOnPlacement) {
-            inputControl.TouchControls.PrimaryContact.performed += OnPlacement;
-            inputControl.TouchControls.PrimaryContact.performed -= OnInteract;
+             inputControl.UI.TouchPress.performed += OnPlacement;
+             inputControl.UI.TouchPress.performed -= OnInteract;
         }
         else {
-            inputControl.TouchControls.PrimaryContact.performed += OnInteract;
-            inputControl.TouchControls.PrimaryContact.performed -= OnPlacement;
+            inputControl.UI.TouchPress.performed += OnInteract;
+            inputControl.UI.TouchPress.performed -= OnPlacement;
         }
     }
 

@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     // General Focus
     public static GameManager Instance;
 
-    [SerializeField] InputManager inputManager;
+    private static InputControl inputControl;
 
     [SerializeField] private List<LevelManager> levels = new List<LevelManager>();
 
@@ -54,6 +54,8 @@ public class GameManager : MonoBehaviour
     private GameObject currentMenu;
     private GameObject backDropMenu;
     
+    [SerializeField] private Camera mainCamera;
+    [SerializeField] private Camera menuCamera;
 
     // Scene Focus
     [SerializeField] private int finalLevelIndex = 3;
@@ -74,8 +76,8 @@ public class GameManager : MonoBehaviour
     //------------------------------------------------------
 
     // General Focus
-    public InputManager GetInputManager() {return inputManager;}
-    public void SetInputManager(InputManager newManager) {inputManager = newManager;}
+    public InputControl GetInputControl() {return inputControl;}
+    public void SetInputControl(InputControl newManager) {inputControl = newManager;}
 
     public List<LevelManager> GetLevels() {return levels;}
     public void SetLevels(List<LevelManager> newList) {levels = newList;}
@@ -164,10 +166,19 @@ public class GameManager : MonoBehaviour
         Random.InitState(initialSeed);
         currentState = Random.state;
         currentMusicSource = generalMusicSource;
+        inputControl = new InputControl();
     }
 
     private void Start() {
         HandleSetup();
+    }
+
+    private void OnEnable() {
+        inputControl.Enable();
+    }
+
+    private void OnDisable() {
+        inputControl.Disable();
     }
 
     //------------------------------------------------------
@@ -176,6 +187,7 @@ public class GameManager : MonoBehaviour
 
     private void HandleSetup() {
         HandleMenuSetup();
+
     }
 
     private  void HandleMenuSetup() {
@@ -319,12 +331,16 @@ public class GameManager : MonoBehaviour
     //------------------------------------------------------
 
     public void ShiftToGame() {
+        mainCamera.gameObject.SetActive(true);
+        menuCamera.gameObject.SetActive(false);
         cameraControlArea.SetActive(true);
         backDropMenu.SetActive(false);
         inMenu = false;
     }
 
     public void ShiftToMenu() {
+        mainCamera.gameObject.SetActive(false);
+        menuCamera.gameObject.SetActive(true);
         cameraControlArea.SetActive(false);
         backDropMenu.SetActive(true);
         inMenu = true;
