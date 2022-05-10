@@ -12,9 +12,11 @@ public class InteractableController : MonoBehaviour
     // Managers
     private GameManager gameManager;
     private LevelManager levelManager;
-    private GameObject playerObject;
+    private AudioManager audioManager;
 
     // General
+
+    private GameObject playerObject;
 
     public enum InteractableType {
         Switch,
@@ -30,6 +32,13 @@ public class InteractableController : MonoBehaviour
     private bool colliding = false;
 
     private int activeCollisions = 0;
+
+    // Audio
+    private AudioClip openDoorSound;
+    private AudioClip singleButtonClickSound;
+    private AudioClip objectPlaceSound;
+    private AudioClip objectLiftSound;
+    private AudioClip leverSwitchSound;
 
     // Switch Only
     [SerializeField] private GameObject swivel;
@@ -53,6 +62,8 @@ public class InteractableController : MonoBehaviour
     //                  COROUTINES
     //------------------------------------------------------
 
+    // Collisions
+
     // Works with triggered variable to provide controlled call of trigger when many are ocurring from one object
     public IEnumerator ControlledTrigger(Collider info, bool triggerEnter) {
 
@@ -63,10 +74,11 @@ public class InteractableController : MonoBehaviour
                 yield return new WaitForEndOfFrame();
                 
                 if(this.interactType == InteractableType.Button) {
+                    Debug.Log("Button Triggered");
                     HandleBoxCollider(false);
                 }
                 CheckTriggerOrigin(info.gameObject);
-                yield return new WaitForEndOfFrame();
+                yield return new WaitForSeconds(2f);
                 HandleBoxCollider(true);
             }
         }
@@ -110,6 +122,33 @@ public class InteractableController : MonoBehaviour
         }
     }
 
+    // Audio
+
+    public IEnumerator HandleOpenDoorSound() {
+        yield return new WaitUntil(() => audioManager.GetAudioSource().isPlaying == false);
+        audioManager.Play(openDoorSound.name);
+    }
+
+    public IEnumerator HandleButtonClickSound() {
+        yield return new WaitUntil(() => audioManager.GetAudioSource().isPlaying == false);
+        audioManager.Play(singleButtonClickSound.name);
+    }
+
+    public IEnumerator HandleObjectPlaceSound() {
+        yield return new WaitUntil(() => audioManager.GetAudioSource().isPlaying == false);
+        audioManager.Play(objectPlaceSound.name);
+    }
+
+    public IEnumerator HandleObjectLiftSound() {
+        yield return new WaitUntil(() => audioManager.GetAudioSource().isPlaying == false);
+        audioManager.Play(objectLiftSound.name);
+    }
+
+    public IEnumerator HandleLeverSwitchSound() {
+        yield return new WaitUntil(() => audioManager.GetAudioSource().isPlaying == false);
+        audioManager.Play(leverSwitchSound.name);
+    }
+
     //------------------------------------------------------
     //                  STANDARD FUNCTIONS
     //------------------------------------------------------
@@ -121,6 +160,7 @@ public class InteractableController : MonoBehaviour
     private void Start() {
         levelManager = gameManager.GetLevels()[0];
         playerObject = gameManager.GetPlayerObject();
+        HandleAudioSetup();
 
         if(interactType == InteractableType.Switch) {
             RotateSwivel(activeState);
@@ -214,6 +254,23 @@ public class InteractableController : MonoBehaviour
     }
 
     //------------------------------------------------------
+    //                 AUDIO FUNCTIONS
+    //------------------------------------------------------
+
+    private void HandleAudioSetup() {
+        audioManager = AudioManager.Instance;
+        LoadAudio();
+    }
+
+    private void LoadAudio() {
+        openDoorSound = Resources.Load<AudioClip>("Foley/openCloseDoor");
+        singleButtonClickSound = Resources.Load<AudioClip>("Foley/singleButtonClick");
+        objectPlaceSound = Resources.Load<AudioClip>("Foley/objectPlacement");
+        objectLiftSound = Resources.Load<AudioClip>("Foley/objectLift");
+        leverSwitchSound = Resources.Load<AudioClip>("Foley/leverSwitch");
+    }
+
+    //------------------------------------------------------
     //          PRIMARY INTERACTION FUNCTIONS
     //------------------------------------------------------
 
@@ -224,10 +281,12 @@ public class InteractableController : MonoBehaviour
         }
 
         if(this.interactType == InteractableType.Switch) {
+            StartCoroutine(HandleLeverSwitchSound());
             HandleSwitchInteraction();
         }
 
         if(this.interactType == InteractableType.Button) {
+            StartCoroutine(HandleButtonClickSound());
             HandleButtonInteraction();
         }
 
@@ -237,7 +296,7 @@ public class InteractableController : MonoBehaviour
     }
 
     private void HandleBlockInteraction(InventoryManager inventoryManager) {
-
+        StartCoroutine(HandleObjectLiftSound());
         if(inventoryManager.transform.parent.gameObject.tag == "Player") {
             inventoryManager.CreateButton(gameObject);
         }
@@ -301,6 +360,7 @@ public class InteractableController : MonoBehaviour
 
     public void CheckExit(bool unlocked) {
         if(unlocked) {
+            StartCoroutine(HandleOpenDoorSound());
             Debug.Log("Door is unlocked, level complete");
             levelManager.SetLevelComplete(true);
             levelManager.HandleLevelComplete();

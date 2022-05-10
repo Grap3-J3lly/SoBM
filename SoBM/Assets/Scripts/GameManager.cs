@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Audio;
 
 [DefaultExecutionOrder(-1)]
 public class GameManager : MonoBehaviour
@@ -37,6 +38,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int initialHighRange = 999;
     private Random.State currentState;
 
+    // Audio Focus
+    [SerializeField] private AudioSource generalMusicSource;
+    private AudioSource currentMusicSource;
+    private AudioManager audioManager;
+    private AudioClip gameWinSound;
+
     // Menu Focus
     [SerializeField] private List<GameObject> possibleMenus = new List<GameObject>();
     private List<GameObject> existingMenus = new List<GameObject>();
@@ -70,9 +77,7 @@ public class GameManager : MonoBehaviour
     public InputManager GetInputManager() {return inputManager;}
     public void SetInputManager(InputManager newManager) {inputManager = newManager;}
 
-    public List<LevelManager> GetLevels() {
-        Debug.Log("Levels Size: " + levels.Count);
-        return levels;}
+    public List<LevelManager> GetLevels() {return levels;}
     public void SetLevels(List<LevelManager> newList) {levels = newList;}
 
     public List<GameObject> GetEnemies() {return enemies;}
@@ -103,8 +108,11 @@ public class GameManager : MonoBehaviour
     public int GetInitialHighRange() {return initialHighRange;}
     public void SetInitialHighRange(int newValue) {initialHighRange = newValue;}
 
-    // Menu Focus
+    // Audio Focus
+    public AudioSource GetCurrentMusicSource() {return currentMusicSource;}
+    public void SetCurrentMusicSource(AudioSource newSource) {currentMusicSource = newSource;}
 
+    // Menu Focus
     public List<GameObject> GetExistingMenus() {return existingMenus;}
     public void SetExistingMenus(List<GameObject> newList) {existingMenus = newList;}
 
@@ -155,6 +163,7 @@ public class GameManager : MonoBehaviour
         Instance = this;
         Random.InitState(initialSeed);
         currentState = Random.state;
+        currentMusicSource = generalMusicSource;
     }
 
     private void Start() {
@@ -198,6 +207,24 @@ public class GameManager : MonoBehaviour
 
     public void UpdateCurrentState() {
         currentState = Random.state;
+    }
+
+    //------------------------------------------------------
+    //                  AUDIO FUNCTIONS
+    //------------------------------------------------------
+
+    private void HandleAudio() {
+        audioManager = AudioManager.Instance;
+
+    }
+
+    public void HandleMusicSource(AudioSource newSource) {
+        if(currentMusicSource == generalMusicSource) {
+            generalMusicSource.Pause();
+        }
+
+        currentMusicSource = newSource;
+        currentMusicSource.Play();
     }
 
     //------------------------------------------------------

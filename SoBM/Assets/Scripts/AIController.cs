@@ -100,8 +100,6 @@ public class AIController : MonoBehaviour
     public IEnumerator TargetRequirement() {
         yield return new WaitForSeconds(delay);
 
-        Debug.Log("Determining Target based on Behavior");
-
         if(behavior == Behaviors.React) {
             DetermineTargetReact();
         }
@@ -111,7 +109,6 @@ public class AIController : MonoBehaviour
         if(behavior == Behaviors.Pursue) {
             DetermineTargetPursuit();
         }
-        Debug.Log("Current Target: " + currentTarget);
     }
 
     public IEnumerator PausePursuit() {
@@ -120,12 +117,10 @@ public class AIController : MonoBehaviour
     }
 
     public IEnumerator StorePlayerObject() {
-        Debug.Log("Grabbing Player Object");
         if(gameManager.GetPlayerObject() == null) {
             yield return new WaitForEndOfFrame();
         }
         playerObject = gameManager.GetPlayerObject();
-        Debug.Log("Grabbing Player Object: " + playerObject);
     }
 
     private IEnumerator ResetCollider() {
@@ -219,7 +214,6 @@ public class AIController : MonoBehaviour
             StartCoroutine(TargetRequirement());
         }
         if(behavior == Behaviors.Pursue) {
-            Debug.Log("Determined Pursuit behavior");
             float storeDelay = delay;
             StartCoroutine(TargetRequirement());
             delay = delay * 5;

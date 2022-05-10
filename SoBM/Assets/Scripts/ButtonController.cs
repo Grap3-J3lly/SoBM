@@ -1,6 +1,7 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ButtonController : MonoBehaviour
 {
@@ -34,6 +35,13 @@ public class ButtonController : MonoBehaviour
     [SerializeField] private string defaultSceneName = "L";
     private int levelNum = -1;
 
+    private AudioSource musicSource;
+    private AudioManager audioManager;
+    private AudioClip buttonClick;
+    private Sprite toggleOnImage;
+    private Sprite toggleOffImage;
+    private Sprite slideControlImage;
+
     //------------------------------------------------------
     //                  GETTERS/SETTERS
     //------------------------------------------------------
@@ -45,11 +53,21 @@ public class ButtonController : MonoBehaviour
     public void SetLevelNum(int newNum) {levelNum = newNum;}
 
     //------------------------------------------------------
+    //                      COROUTINES
+    //------------------------------------------------------
+
+    // private IEnumerator AudioCheck() {
+    //     if(audioManager == null) {
+    //         yield return new WaitUntil(() => AudioManager.Instance != null);
+    //     }
+    // }
+
+    //------------------------------------------------------
     //                  STANDARD FUNCTIONS
     //------------------------------------------------------
 
     private void Awake() {
-        gameManager = GameManager.Instance;
+        HandleSetup();
     }
 
     private void Start() {
@@ -66,6 +84,28 @@ public class ButtonController : MonoBehaviour
     }
 
     //------------------------------------------------------
+    //                  SETUP FUNCTIONS
+    //------------------------------------------------------
+
+    private void HandleSetup() {
+        gameManager = GameManager.Instance;
+        musicSource = gameManager.GetCurrentMusicSource();
+        audioManager = AudioManager.Instance;
+        LoadAudio();
+        LoadSprites();
+    }
+
+    private void LoadAudio() {
+        buttonClick = Resources.Load<AudioClip>("Foley/singleButtonClick");
+    }
+
+    private void LoadSprites() {
+        toggleOnImage = Resources.Load<Sprite>("Sprites/check");
+        toggleOffImage = Resources.Load<Sprite>("Sprites/blank");
+        slideControlImage = Resources.Load<Sprite>("Sprites/slideControl");
+    }   
+
+    //------------------------------------------------------
     //                  GENERAL FUNCTIONS
     //------------------------------------------------------
 
@@ -74,6 +114,8 @@ public class ButtonController : MonoBehaviour
     }
 
     public void HandleButtonPress() {
+        //StartCoroutine(AudioCheck());
+        audioManager.Play(buttonClick.name);
         switch(this.buttonType) {
             case ButtonType.Play:
                 HandlePlay();
@@ -149,7 +191,8 @@ public class ButtonController : MonoBehaviour
     }
 
     private void HandleMusicToggle() {
-        
+        ToggleAudioSource(musicSource);
+        ToggleImage(musicSource.gameObject.activeSelf);
     }
 
     private void HandleMusicVolumeSliderControl() {
@@ -157,7 +200,8 @@ public class ButtonController : MonoBehaviour
     }
 
     private void HandleSoundToggle() {
-        
+        ToggleAudioSource(audioManager.GetAudioSource());
+        ToggleImage(audioManager.GetAudioSource().gameObject.activeSelf);
     }
 
     private void HandleSoundVolumeSliderControl() {
@@ -187,7 +231,9 @@ public class ButtonController : MonoBehaviour
             tempManager.GetEnemy().SetActive(false);
         gameManager.SetPreviousLevelNum(gameManager.GetCurrentLevelNum());
         gameManager.SetCurrentLevelNum(gameManager.GetCurrentLevelNum() + 1);
-        StartCoroutine(gameManager.LoadScene(defaultSceneName + (gameManager.GetCurrentLevelNum()), defaultSceneName + (gameManager.GetPreviousLevelNum())));
+        StartCoroutine(gameManager.LoadScene(defaultSceneName + (gameManager.GetCurrentLevelNum())));
+        StartCoroutine(gameManager.UnloadScene(defaultSceneName + (gameManager.GetPreviousLevelNum())));
+        
     }
 
     private void HandleSpecificLevelStart() {
@@ -208,5 +254,20 @@ public class ButtonController : MonoBehaviour
         gameManager.ShiftToGame();
     }
 
+    private void ToggleImage(bool status) {
+        Image currentButtonImage = GetComponent<Image>();
+        if(status) {
+            currentButtonImage.sprite = toggleOnImage;
+        }
+        else {
+            currentButtonImage.sprite = toggleOffImage;
+        }
+    }
+
+    private void ToggleAudioSource(AudioSource thisSource) {
+        bool status = thisSource.gameObject.activeSelf;
+        status = !status;
+        thisSource.gameObject.SetActive(status);
+    }
 
 }

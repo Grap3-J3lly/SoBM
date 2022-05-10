@@ -64,6 +64,8 @@ public class InventoryButton : MonoBehaviour
 
     public void SelectItem() {
         inventoryManager.SetSelectedObject(referencedItem);
+        gameManager.GetPlayerObject().GetComponent<PlayerController>().SetUseOnPlacement(true);
+        gameManager.GetPlayerObject().GetComponent<PlayerController>().CheckInteractOrPlacement();
         currentlySelected = true;
     }
 

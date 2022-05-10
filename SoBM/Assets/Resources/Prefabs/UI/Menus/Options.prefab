@@ -108,7 +108,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -200, y: 200}
-  m_SizeDelta: {x: 250, y: 50}
+  m_SizeDelta: {x: 275, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8374303070363053299
 CanvasRenderer:
@@ -140,15 +140,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Music
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7592fa124ee37684eaca2d2c86c1e047, type: 2}
+  m_sharedMaterial: {fileID: -4244165354681981451, guid: 7592fa124ee37684eaca2d2c86c1e047, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0.6862745, g: 0.8901961, b: 0.90588236, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -268,8 +268,11 @@ MonoBehaviour:
   - {fileID: 8374303071642812723}
   buttonArea: {fileID: 8374303071537810246}
   sceneOffset: 1
-  xOffset: 0
-  yOffset: 0
+  specificLevelName: 'Level '
+  anchorMaxOffset: {x: 0, y: 0}
+  anchorMinOffset: {x: 0, y: 0}
+  positionMaxOffset: {x: 0, y: 0}
+  positionMinOffset: {x: 0, y: 0}
 --- !u!1 &8374303070527701455
 GameObject:
   m_ObjectHideFlags: 0
@@ -396,6 +399,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8374303070541484205}
   - component: {fileID: 8374303070541484206}
+  - component: {fileID: 3745547524845151252}
   m_Layer: 5
   m_Name: SoundVolumeSlider
   m_TagString: Untagged
@@ -472,10 +476,36 @@ MonoBehaviour:
   m_MinValue: 0.0001
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.0001
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 3745547524845151252}
+        m_TargetAssemblyTypeName: VolumeController, Assembly-CSharp
+        m_MethodName: SetVolume
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &3745547524845151252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8374303070541484204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b8ae8bcdcce89e47ad10e9c35e5d731, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mixerType: 2
+  mixer: {fileID: 24100000, guid: 753f764b5c04d77468622f05b91be639, type: 2}
 --- !u!1 &8374303070575046130
 GameObject:
   m_ObjectHideFlags: 0
@@ -511,7 +541,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -200, y: 100}
-  m_SizeDelta: {x: 250, y: 50}
+  m_SizeDelta: {x: 275, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8374303070575046132
 CanvasRenderer:
@@ -543,15 +573,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Music Volume
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7592fa124ee37684eaca2d2c86c1e047, type: 2}
+  m_sharedMaterial: {fileID: -4244165354681981451, guid: 7592fa124ee37684eaca2d2c86c1e047, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0.6862745, g: 0.8901961, b: 0.90588236, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -645,7 +675,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -200, y: -100}
-  m_SizeDelta: {x: 250, y: 50}
+  m_SizeDelta: {x: 275, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8374303070658597635
 CanvasRenderer:
@@ -677,15 +707,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Sound Volume
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7592fa124ee37684eaca2d2c86c1e047, type: 2}
+  m_sharedMaterial: {fileID: -4244165354681981451, guid: 7592fa124ee37684eaca2d2c86c1e047, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0.6862745, g: 0.8901961, b: 0.90588236, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -939,6 +969,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8374303071134013995}
   - component: {fileID: 8374303071134013996}
+  - component: {fileID: 6967336107830833223}
   m_Layer: 5
   m_Name: MusicVolumeSlider
   m_TagString: Untagged
@@ -1015,10 +1046,36 @@ MonoBehaviour:
   m_MinValue: 0.0001
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.0001
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6967336107830833223}
+        m_TargetAssemblyTypeName: VolumeController, Assembly-CSharp
+        m_MethodName: SetVolume
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &6967336107830833223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8374303071134013994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b8ae8bcdcce89e47ad10e9c35e5d731, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mixerType: 1
+  mixer: {fileID: 24100000, guid: 753f764b5c04d77468622f05b91be639, type: 2}
 --- !u!1 &8374303071283838515
 GameObject:
   m_ObjectHideFlags: 0
@@ -1029,6 +1086,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8374303071283838516}
   - component: {fileID: 8374303071283838517}
+  - component: {fileID: 2511650165585102526}
   m_Layer: 5
   m_Name: GameVolumeSlider
   m_TagString: Untagged
@@ -1105,10 +1163,36 @@ MonoBehaviour:
   m_MinValue: 0.0001
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.0001
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2511650165585102526}
+        m_TargetAssemblyTypeName: VolumeController, Assembly-CSharp
+        m_MethodName: SetVolume
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &2511650165585102526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8374303071283838515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b8ae8bcdcce89e47ad10e9c35e5d731, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mixerType: 0
+  mixer: {fileID: 24100000, guid: 753f764b5c04d77468622f05b91be639, type: 2}
 --- !u!1 &8374303071358269821
 GameObject:
   m_ObjectHideFlags: 0
@@ -1329,7 +1413,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -200, y: 0}
-  m_SizeDelta: {x: 250, y: 50}
+  m_SizeDelta: {x: 275, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8374303071744514420
 CanvasRenderer:
@@ -1361,15 +1445,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Sound
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7592fa124ee37684eaca2d2c86c1e047, type: 2}
+  m_sharedMaterial: {fileID: -4244165354681981451, guid: 7592fa124ee37684eaca2d2c86c1e047, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0.6862745, g: 0.8901961, b: 0.90588236, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1566,7 +1650,7 @@ RectTransform:
   m_GameObject: {fileID: 8374303072106453099}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children: []
   m_Father: {fileID: 8374303070527701456}
   m_RootOrder: 0
@@ -1606,8 +1690,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Options
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f79ef739bf9d1e240b4880f751ad9cb2, type: 2}
+  m_sharedMaterial: {fileID: -7446312717796362211, guid: f79ef739bf9d1e240b4880f751ad9cb2, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1912,6 +1996,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonType: 4
+  defaultSceneName: L
 --- !u!1 &8374303072361327488
 GameObject:
   m_ObjectHideFlags: 0
@@ -2001,6 +2086,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonType: 6
+  defaultSceneName: L
 --- !u!1 &8374303072365682402
 GameObject:
   m_ObjectHideFlags: 0
@@ -2036,7 +2122,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -200, y: 300}
-  m_SizeDelta: {x: 250, y: 50}
+  m_SizeDelta: {x: 275, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8374303072365682404
 CanvasRenderer:
@@ -2068,15 +2154,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Game Volume
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7592fa124ee37684eaca2d2c86c1e047, type: 2}
+  m_sharedMaterial: {fileID: -4244165354681981451, guid: 7592fa124ee37684eaca2d2c86c1e047, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0.6862745, g: 0.8901961, b: 0.90588236, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2224,6 +2310,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonType: 8
+  defaultSceneName: L
 --- !u!1001 &1091824462274231363
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2428,14 +2515,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 531a4e03416f9884fa84f5719fcac88d, type: 3}
---- !u!1 &8374303071642812723 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6560224547018727392, guid: 531a4e03416f9884fa84f5719fcac88d, type: 3}
-  m_PrefabInstance: {fileID: 3403904594179448531}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &8374303071642812724 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6560224547018727399, guid: 531a4e03416f9884fa84f5719fcac88d, type: 3}
+  m_PrefabInstance: {fileID: 3403904594179448531}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8374303071642812723 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6560224547018727392, guid: 531a4e03416f9884fa84f5719fcac88d, type: 3}
   m_PrefabInstance: {fileID: 3403904594179448531}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5992703861474002265

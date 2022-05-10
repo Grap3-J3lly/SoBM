@@ -17,6 +17,7 @@ public class LevelManager : MonoBehaviour
     private int requirementCount = 0;
     private bool levelComplete = false;
     [SerializeField] private int levelNumber;
+    [SerializeField] private AudioSource levelMusicSource;
 
     [SerializeField] private GameObject exitDoor;
 
@@ -50,13 +51,32 @@ public class LevelManager : MonoBehaviour
     public void SetEnemySpawnLocation(Vector3 newLoc) {enemySpawnLocation = newLoc;}
 
     //------------------------------------------------------
+    //                  COROUTINES
+    //------------------------------------------------------
+
+    private IEnumerator MovePlayerToSpawn() {
+        yield return new WaitForEndOfFrame();
+        Debug.Log("Player Position:" + gameManager.GetPlayerObject().transform.position);
+        Debug.Log("Start Location:" + startLocation);
+        gameManager.GetPlayerObject().transform.position = startLocation;
+        Debug.Log("Player Position:" + gameManager.GetPlayerObject().transform.position);
+        
+    }
+
+    //------------------------------------------------------
     //                  STANDARD FUNCTIONS
     //------------------------------------------------------
 
     private void Awake() {
-        HandleSetup();
+        
         
     }
+
+    private void Start() {
+        HandleSetup();
+    }
+
+    
 
     //------------------------------------------------------
     //                  SETUP FUNCTIONS
@@ -73,7 +93,7 @@ public class LevelManager : MonoBehaviour
         gameManager = GameManager.Instance;
         gameManager.GetLevels().Add(this);
         gameManager.SetCurrentLevelNum(levelNumber);
-        //gameManager.GetCameraControlArea().transform.position = cameraControlLocation;
+        gameManager.HandleMusicSource(levelMusicSource);
     }
 
     private void HandleLevelSetup() {
@@ -85,7 +105,9 @@ public class LevelManager : MonoBehaviour
     }
 
     private void HandleCharacterSetup() {
-        gameManager.GetPlayerObject().transform.position = startLocation;
+        gameManager.GetPlayerObject().SetActive(true);
+        //gameManager.GetPlayerObject().transform.position = startLocation;
+        StartCoroutine(MovePlayerToSpawn());
         gameManager.GetPlayerObject().GetComponentInChildren<InventoryManager>().LocateButtonLocation();
 
         enemyNPC = gameManager.GetEnemies()[levelNumber - 1];

@@ -20,11 +20,14 @@ public class PlayerController : MonoBehaviour
 
     public event Action onActivationEvent;
 
-    // Player Related
+    // Animation Related
+    private Animator playerAnimator;
 
-    //[SerializeField] private InputManager inputManager;
+    // Player Related
     private InputControl inputControl;
     private CharacterController charController;
+
+    [SerializeField] private bool useOnPlacement = false;
 
     // Horizontal Movement Related
     private Vector2 horizontalInput;
@@ -47,6 +50,9 @@ public class PlayerController : MonoBehaviour
     //             GETTERS/SETTERS
     //------------------------------------------------------
 
+    public bool GetUseOnPlacement() {return useOnPlacement;}
+    public void SetUseOnPlacement(bool newValue) {useOnPlacement = newValue;}
+
     public bool GetZoneEntered() {return zoneEntered;} 
     public void SetZoneEntered(bool newValue) {zoneEntered = newValue;}
 
@@ -66,6 +72,7 @@ public class PlayerController : MonoBehaviour
         HandleMovementSetup();
         HandleInteractionSetup();
         HandlePlacementSetup();
+        
     }
 
     //------------------------------------------------------
@@ -82,16 +89,19 @@ public class PlayerController : MonoBehaviour
         inputControl.CharacterControls.Interact.Enable();
         inputControl.CharacterControls.Place.Enable();
 
+        inputControl.TouchControls.PrimaryContact.Enable();
+
         //UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown += OnInteract;
     }
 
     private void Start() {
-        
+        HandleAnimationSetup();
     }
 
     private void Update() {
         HandleRotation();
         HandleMovement();
+        HandleAnimationChange();
     }
 
     private void OnDisable() {
@@ -99,6 +109,8 @@ public class PlayerController : MonoBehaviour
         inputControl.CharacterControls.Move.Disable();
         inputControl.CharacterControls.Interact.Disable();
         inputControl.CharacterControls.Place.Disable();
+
+        inputControl.TouchControls.PrimaryContact.Disable();
 
         //UnityEngine.InputSystem.EnhancedTouch.Touch.onFingerDown -= OnInteract;
         //EnhancedTouchSupport.Disable();
@@ -121,13 +133,40 @@ public class PlayerController : MonoBehaviour
     private void HandleInteractionSetup() {
         // inputControl.CharacterControls.Interact.started += OnInteract;
         // inputControl.CharacterControls.Interact.canceled += OnInteract;
+        
         inputControl.CharacterControls.Interact.performed += OnInteract;
+
+        
+        
 
         //EnhancedTouchSupport.Enable();
     }
 
     private void HandlePlacementSetup() {
-        inputControl.CharacterControls.Place.performed += OnPlacement;
+        //inputControl.CharacterControls.Place.performed += OnPlacement;
+
+        
+    }
+
+    public void HandleAnimationSetup() {
+        playerAnimator = GetComponent<Animator>();
+        playerAnimator.updateMode = AnimatorUpdateMode.Normal;
+    }
+
+    //------------------------------------------------------
+    //          ANIMATION FUNCTIONS
+    //------------------------------------------------------
+
+    private void HandleAnimationChange() {
+        bool isWalking = playerAnimator.GetBool("isWalking");
+        
+
+        if(!isWalking && isMovePressed) {
+            playerAnimator.SetBool("isWalking", true);
+        }
+        if(isWalking && !isMovePressed) {
+            playerAnimator.SetBool("isWalking", false);
+        }
     }
 
     //------------------------------------------------------
@@ -169,25 +208,6 @@ public class PlayerController : MonoBehaviour
     //          INTERACTION FUNCTIONS
     //------------------------------------------------------
 
-    // private void OnInteract(InputAction.CallbackContext context) {
-    //     interacting = context.ReadValueAsButton();
-    // }
-
-    // Touch Screen Movement Links:
-    // https://www.youtube.com/watch?v=4HpC--2iowE
-    // https://www.youtube.com/watch?v=guOhuhh4CTQ
-    // https://www.youtube.com/watch?v=sYtWOsKvqcg
-
-    // private void OnInteract(Finger finger) {
-    //     Vector2 newPos = camera.ScreenToWorldPoint(finger.screenPosition);
-
-    //     Vector3 test = new Vector3(newPos.x, newPos.y, 5f);
-
-    //     //Debug.Log("World Location Info: " + newPos);
-
-    //     Debug.Log("Finger Position Info: " + finger.screenPosition);
-    // }
-
     private void OnInteract(InputAction.CallbackContext context) {
 
         if(zoneEntered) {
@@ -224,11 +244,16 @@ public class PlayerController : MonoBehaviour
         if(inventoryManager.GetSelectedObject() != null) {
             Vector3 placement = HandlePlacementLocation();
             GameObject selectedObject = inventoryManager.GetSelectedObject();
+            StartCoroutine(selectedObject.GetComponent<InteractableController>().HandleObjectPlaceSound());
+            
             PlaceItemInWorld(selectedObject, placement);
             inventoryManager.SetSelectedObject(null);
             Destroy(inventoryManager.GetInventoryButtons()[0]);
             inventoryManager.GetInventory().RemoveAt(0);
             inventoryManager.GetInventoryButtons().RemoveAt(0);
+
+            useOnPlacement = false;
+            CheckInteractOrPlacement();
         }
     }
 
@@ -253,6 +278,26 @@ public class PlayerController : MonoBehaviour
     public void ActivationEvent() {
         if(onActivationEvent != null) {
             onActivationEvent();
+        }
+    }
+
+    // private void DetermineInteractionType() {
+    //     if(!inventoryManager.GetSelectedObject()) {
+    //         useOnPlacement = false;
+    //     }
+    //     else {
+    //         useOnPlacement = true;
+    //     }
+    // }
+
+    public void CheckInteractOrPlacement() {
+        if(useOnPlacement) {
+            inputControl.TouchControls.PrimaryContact.performed += OnPlacement;
+            inputControl.TouchControls.PrimaryContact.performed -= OnInteract;
+        }
+        else {
+            inputControl.TouchControls.PrimaryContact.performed += OnInteract;
+            inputControl.TouchControls.PrimaryContact.performed -= OnPlacement;
         }
     }
 

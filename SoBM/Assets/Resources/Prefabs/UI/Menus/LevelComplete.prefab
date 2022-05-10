@@ -102,8 +102,11 @@ MonoBehaviour:
   - {fileID: 5189364438297363027}
   buttonArea: {fileID: 5189364437138022393}
   sceneOffset: 1
-  xOffset: 0
-  yOffset: 0
+  specificLevelName: 'Level '
+  anchorMaxOffset: {x: 0, y: 0}
+  anchorMinOffset: {x: 0, y: 0}
+  positionMaxOffset: {x: 0, y: 0}
+  positionMinOffset: {x: 0, y: 0}
 --- !u!1 &5189364437461315832
 GameObject:
   m_ObjectHideFlags: 0
@@ -244,8 +247,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Level Complete
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f79ef739bf9d1e240b4880f751ad9cb2, type: 2}
+  m_sharedMaterial: {fileID: -7446312717796362211, guid: f79ef739bf9d1e240b4880f751ad9cb2, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -378,8 +381,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 1 - 1
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f79ef739bf9d1e240b4880f751ad9cb2, type: 2}
+  m_sharedMaterial: {fileID: -7446312717796362211, guid: f79ef739bf9d1e240b4880f751ad9cb2, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
